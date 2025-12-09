@@ -3,92 +3,165 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tarocchi Misteriosi</title>
+<title>Mystic Tarot</title>
 
 <style>
 body{
-  background: radial-gradient(circle at top, #1a1026, #000);
-  color:#f5e6c8;
-  font-family: Georgia, serif;
+  background:radial-gradient(circle at top,#150f1f,#000);
+  color:#f7e7c6;
+  font-family:Georgia,serif;
   text-align:center;
-  padding:20px;
+  padding:15px;
 }
 
-h1{
-  letter-spacing:2px;
-  margin-bottom:10px;
-}
+h1{letter-spacing:3px}
 
-button{
-  background:#c8aa6e;
+#lang button{
+  margin:5px;
   border:none;
-  border-radius:30px;
-  padding:14px 28px;
-  font-size:16px;
+  background:#c9a45c;
+  padding:8px 15px;
+  border-radius:6px;
   cursor:pointer;
 }
 
-button:hover{
-  background:#e6c27a;
+#grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(90px,1fr));
+  gap:10px;
+  margin-top:20px;
 }
 
-#cartaBox{
-  margin-top:30px;
-  background:rgba(0,0,0,0.6);
+.card{
+  height:140px;
+  border-radius:10px;
+  background:url("back.jpg") center/cover;
+  cursor:pointer;
+  transition:transform 0.3s;
+}
+
+.card:hover{
+  transform:scale(1.07);
+}
+
+#overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.9);
+  align-items:center;
+  justify-content:center;
+}
+
+#detail{
+  background:#111;
   padding:20px;
   border-radius:15px;
+  max-width:360px;
 }
 
-#nomeCarta{
-  font-size:24px;
-  margin-bottom:10px;
+#detail img{
+  width:100%;
+  border-radius:10px;
 }
 
-#storia{
-  font-size:18px;
+#title{
+  font-size:26px;
+  margin-top:10px;
+}
+
+#text{
   line-height:1.5;
 }
 </style>
 </head>
-
 <body>
 
-<h1>🔮 Scopri la tua carta</h1>
-<p>Clicca per ricevere un messaggio dal destino</p>
+<h1 id="t_title">Scegli la tua carta</h1>
 
-<button onclick="pesca()">Pesca una carta</button>
-
-<div id="cartaBox" style="display:none;">
-  <div id="nomeCarta"></div>
-  <div id="storia"></div>
+<div id="lang">
+<button onclick="setLang('it')">Italiano</button>
+<button onclick="setLang('en')">English</button>
 </div>
 
+<div id="grid"></div>
+
+<div id="overlay" onclick="closeCard()">
+  <div id="detail" onclick="event.stopPropagation()">
+    <img id="bigImg">
+    <div id="title"></div>
+    <div id="text"></div>
+  </div>
+</div>
+
+<audio autoplay loop hidden>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
 <script>
-const carte = [
- {nome:"Il Mago",storia:"Sei pronto a iniziare qualcosa di nuovo. Il tuo potenziale è grande."},
- {nome:"La Papessa",storia:"La risposta che cerchi è dentro di te. Ascolta l’intuizione."},
- {nome:"L'Imperatrice",storia:"Creatività e abbondanza ti circondano."},
- {nome:"L'Imperatore",storia:"È tempo di assumerti una responsabilità importante."},
- {nome:"Il Papa",storia:"Una guida fidata può aiutarti."},
- {nome:"Gli Amanti",storia:"Una scelta di cuore si presenta."},
- {nome:"Il Carro",storia:"Avanza con decisione verso il tuo obiettivo."},
- {nome:"La Forza",storia:"Il coraggio nasce dalla calma."},
- {nome:"L'Eremita",storia:"Prenditi tempo per riflettere."},
- {nome:"La Ruota",storia:"Un cambiamento inaspettato è vicino."},
- {nome:"La Giustizia",storia:"Agisci con onestà."},
- {nome:"L'Appeso",storia:"Guarda una situazione da un'altra prospettiva."},
- {nome:"La Morte",storia:"Trasformazione e rinascita imminenti."},
- {nome:"La Temperanza",storia:"Trova equilibrio."},
- {nome:"Il Diavolo",storia:"Non lasciarti imprigionare dalle paure."},
- {nome:"La Torre",storia:"Un cambiamento improvviso ti libererà."},
- {nome:"La Stella",storia:"La speranza ti accompagna."},
- {nome:"La Luna",storia:"Fidati dei tuoi sogni."},
- {nome:"Il Sole",storia:"Gioia e chiarezza sono vicine."},
- {nome:"Il Giudizio",storia:"Una rinascita ti attende."},
- {nome:"Il Mondo",storia:"Un ciclo si completa."},
- {nome:"Il Matto",storia:"Un nuovo viaggio ha inizio."}
+let lang="it";
+
+const cards=[
+{
+it:"Il Mago",
+en:"The Magician",
+text_it:"Il potere di creare è nelle tue mani.",
+text_en:"The power to create is in your hands.",
+img:"img/1_mago.jpg"
+},
+{
+it:"La Papessa",
+en:"The High Priestess",
+text_it:"Segui la tua intuizione.",
+text_en:"Trust your intuition.",
+img:"img/2_papessa.jpg"
+},
+{
+it:"L'Imperatrice",
+en:"The Empress",
+text_it:"Creatività e protezione.",
+text_en:"Creativity and care.",
+img:"img/3_imperatrice.jpg"
+},
+{
+it:"L'Imperatore",
+en:"The Emperor",
+text_it:"Struttura e forza.",
+text_en:"Authority and strength.",
+img:"img/4_imperatore.jpg"
+}
 ];
 
-function pesca(){
-  const n = Math.floor(Math.random()*carte.length);
-  document.getElem
+// ▶️ Aggiungi qui le altre carte
+
+function setLang(l){
+  lang=l;
+  document.getElementById("t_title").innerText=
+    lang=="it"?"Scegli la tua carta":"Choose your card";
+}
+
+const grid=document.getElementById("grid");
+
+cards.forEach(c=>{
+  let d=document.createElement("div");
+  d.className="card";
+  d.onclick=()=>openCard(c);
+  grid.appendChild(d);
+});
+
+function openCard(c){
+  document.getElementById("overlay").style.display="flex";
+  document.getElementById("bigImg").src=c.img;
+  document.getElementById("title").innerText=
+      lang=="it"?c.it:c.en;
+  document.getElementById("text").innerText=
+      lang=="it"?c.text_it:c.text_en;
+}
+
+function closeCard(){
+  document.getElementById("overlay").style.display="none";
+}
+</script>
+
+</body>
+</html>
