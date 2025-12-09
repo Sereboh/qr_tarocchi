@@ -4,90 +4,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mystic Tarot</title>
-
 <style>
-body {
-  background: radial-gradient(circle at top, #130f22, #000);
-  color: #f4e7c2;
-  text-align: center;
-  font-family: Georgia, serif;
-  padding: 15px;
+body{
+ background:radial-gradient(circle at top,#130f22,#000);
+ color:#f4e7c2;
+ font-family:Georgia,serif;
+ overflow:hidden;
+ margin:0;
+ padding:0;
 }
 
-h1 { letter-spacing: 2px; }
-
-button {
-  background: #c4a35f;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin: 5px;
+h1{
+ text-align:center;
+ margin:20px 0;
+ letter-spacing:2px;
 }
 
-#grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-  gap: 15px;
-  margin-top: 20px;
+#deck{
+ position:relative;
+ width:100%;
+ height:400px;
+ margin-top:50px;
 }
 
-.card {
-  width: 100%;
-  height: 140px;
-  background: url('back.jpg') center/cover no-repeat;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: transform 0.3s;
+.card{
+ position:absolute;
+ width:100px;
+ height:150px;
+ background:url('back.jpg') center/cover no-repeat;
+ border-radius:10px;
+ cursor:pointer;
+ transition: transform 1s, top 1s, left 1s;
 }
 
-.card:hover {
-  transform: scale(1.05);
+#overlay{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,0.9);
+ display:none;
+ align-items:center;
+ justify-content:center;
 }
 
-#overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
-  display: none;
-  align-items: center;
-  justify-content: center;
+#box{
+ background:#111;
+ padding:20px;
+ border-radius:14px;
+ max-width:340px;
+ text-align:center;
 }
 
-#box {
-  background: #111;
-  padding: 20px;
-  border-radius: 14px;
-  max-width: 340px;
+#box img{
+ width:100%;
+ border-radius:10px;
 }
 
-#box img {
-  width: 100%;
-  border-radius: 10px;
+#title{
+ margin-top:10px;
+ font-size:22px;
 }
 
-#title {
-  margin-top: 10px;
-  font-size: 22px;
-}
-
-#desc {
-  margin-top: 10px;
+#desc{
+ margin-top:10px;
 }
 </style>
 </head>
-
 <body>
 
 <h1 id="titleMain">Scegli la tua carta</h1>
 
-<button onclick="setLang('it')">🇮🇹 Italiano</button>
-<button onclick="setLang('en')">🇬🇧 English</button>
-
-<br>
-<button onclick="playMusic()">🎵 Musica</button>
-
-<div id="grid"></div>
+<div id="deck"></div>
 
 <div id="overlay" onclick="closeCard()">
   <div id="box" onclick="event.stopPropagation()">
@@ -102,8 +88,6 @@ button {
 </audio>
 
 <script>
-let lang = "it";
-
 const names = [
 "Il Matto","Il Mago","La Papessa","L'Imperatrice","L'Imperatore",
 "Il Papa","Gli Amanti","Il Carro","La Forza","L'Eremita","La Ruota",
@@ -118,42 +102,47 @@ const namesEN = [
 "The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"
 ];
 
-// Testi semplici per ogni carta
-const texts_IT = names.map(n => "Messaggio della carta: " + n);
-const texts_EN = namesEN.map(n => "Message of the card: " + n);
+const texts_IT = [
+"Il Matto: Nuovi inizi, spontaneità e avventura.",
+"Il Mago: Creatività e potere personale.",
+"La Papessa: Saggezza e intuizione.",
+"La Imperatrice: Fertilità e abbondanza.",
+"La Imperatore: Stabilità e autorità.",
+"Il Papa: Tradizione e guida spirituale.",
+"Gli Amanti: Amore e scelte importanti.",
+"Il Carro: Determinazione e successo.",
+"La Forza: Coraggio e pazienza.",
+"L'Eremita: Ricerca interiore e saggezza.",
+"La Ruota: Cambiamento e cicli.",
+"La Giustizia: Equilibrio e giustizia.",
+"L'Appeso: Sacrificio e prospettiva.",
+"La Morte: Trasformazione e fine di un ciclo.",
+"La Temperanza: Armonia e moderazione.",
+"Il Diavolo: Tentazione e dipendenze.",
+"La Torre: Rottura e cambiamento improvviso.",
+"La Stella: Speranza e ispirazione.",
+"La Luna: Intuizione e illusioni.",
+"Il Sole: Felicità e successo.",
+"Il Giudizio: Rinascita e giudizio.",
+"Il Mondo: Completamento e realizzazione."
+];
 
-const grid = document.getElementById("grid");
-
-// Creazione griglia
-names.forEach((n,i) => {
-  let d = document.createElement("div");
-  d.className = "card";
-  d.onclick = () => openCard(i);
-  grid.appendChild(d);
-});
-
-function openCard(i) {
-  document.getElementById("overlay").style.display = "flex";
-  // Percorso immagini aggiornato: cartella img/
-  const fileName = i + "_" + names[i].toLowerCase().replace(/\s/g,"") + ".jpg";
-  document.getElementById("imgBig").src = "img/" + fileName;
-  document.getElementById("title").innerText = lang == "it" ? names[i] : namesEN[i];
-  document.getElementById("desc").innerText = lang == "it" ? texts_IT[i] : texts_EN[i];
-}
-
-function closeCard() {
-  document.getElementById("overlay").style.display = "none";
-}
-
-function setLang(l) {
-  lang = l;
-  document.getElementById("titleMain").innerText = l == "it" ? "Scegli la tua carta" : "Choose your card";
-}
-
-function playMusic() {
-  document.getElementById("bgmusic").play();
-}
-</script>
-
-</body>
-</html>
+const texts_EN = [
+"The Fool: New beginnings, spontaneity, adventure.",
+"The Magician: Creativity and personal power.",
+"The High Priestess: Wisdom and intuition.",
+"The Empress: Fertility and abundance.",
+"The Emperor: Stability and authority.",
+"The Hierophant: Tradition and spiritual guidance.",
+"The Lovers: Love and important choices.",
+"The Chariot: Determination and success.",
+"Strength: Courage and patience.",
+"The Hermit: Inner search and wisdom.",
+"Wheel of Fortune: Change and cycles.",
+"Justice: Balance and fairness.",
+"The Hanged Man: Sacrifice and perspective.",
+"Death: Transformation and end of a cycle.",
+"Temperance: Harmony and moderation.",
+"The Devil: Temptation and addictions.",
+"The Tower: Sudden change and disruption.",
+"The Star: Hope and inspiration.",
