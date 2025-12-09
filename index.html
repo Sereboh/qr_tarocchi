@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesca una carta</title>
+<style>
+body { 
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  background: #fff;
+}
+.carta{
+  display:inline-block;
+  width:120px;
+  height:160px;
+  background:#eee;
+  margin:10px;
+  line-height:160px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+  padding: 6px;
+  box-sizing: border-box;
+}
+#descrizione{
+  margin-top:20px;
+  font-size:18px;
+  min-height:48px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Scegli una carta</h1>
+<div id="carte"></div>
+<div id="descrizione">Tocca una carta</div>
+
+<script>
+const carte = ["Il Mago","La Papessa","L'Imperatrice","L'Imperatore","Il Papa",
+"Gli Amanti","Il Carro","La Forza","L'Eremita","La Ruota",
+"La Giustizia","L'Appeso","La Morte","La Temperanza","Il Diavolo",
+"La Torre","La Stella","La Luna","Il Sole","Il Giudizio",
+"Il Mondo","Il Matto"];
+
+const container = document.getElementById("carte");
+const testo = document.getElementById("descrizione");
+
+carte.forEach(nome => {
+  const c = document.createElement("div");
+  c.className = "carta";
+  c.innerText = nome;
+  c.onclick = function() {
+    testo.innerText = "Hai scelto: " + nome;
+  }
+  container.appendChild(c);
+});
+</script>
+
+</body>
+</html>
