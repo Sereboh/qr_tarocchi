@@ -3,61 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pesca una carta</title>
+<title>Tarocchi Misteriosi</title>
+
 <style>
-body { 
-  font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 20px;
-  background: #fff;
+body{
+  background: radial-gradient(circle at top, #1a1026, #000);
+  color:#f5e6c8;
+  font-family: Georgia, serif;
+  text-align:center;
+  padding:20px;
 }
-.carta{
-  display:inline-block;
-  width:120px;
-  height:160px;
-  background:#eee;
-  margin:10px;
-  line-height:160px;
-  border-radius:10px;
+
+h1{
+  letter-spacing:2px;
+  margin-bottom:10px;
+}
+
+button{
+  background:#c8aa6e;
+  border:none;
+  border-radius:30px;
+  padding:14px 28px;
+  font-size:16px;
   cursor:pointer;
-  font-weight:bold;
-  padding: 6px;
-  box-sizing: border-box;
 }
-#descrizione{
-  margin-top:20px;
+
+button:hover{
+  background:#e6c27a;
+}
+
+#cartaBox{
+  margin-top:30px;
+  background:rgba(0,0,0,0.6);
+  padding:20px;
+  border-radius:15px;
+}
+
+#nomeCarta{
+  font-size:24px;
+  margin-bottom:10px;
+}
+
+#storia{
   font-size:18px;
-  min-height:48px;
+  line-height:1.5;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Scegli una carta</h1>
-<div id="carte"></div>
-<div id="descrizione">Tocca una carta</div>
+<h1>🔮 Scopri la tua carta</h1>
+<p>Clicca per ricevere un messaggio dal destino</p>
+
+<button onclick="pesca()">Pesca una carta</button>
+
+<div id="cartaBox" style="display:none;">
+  <div id="nomeCarta"></div>
+  <div id="storia"></div>
+</div>
 
 <script>
-const carte = ["Il Mago","La Papessa","L'Imperatrice","L'Imperatore","Il Papa",
-"Gli Amanti","Il Carro","La Forza","L'Eremita","La Ruota",
-"La Giustizia","L'Appeso","La Morte","La Temperanza","Il Diavolo",
-"La Torre","La Stella","La Luna","Il Sole","Il Giudizio",
-"Il Mondo","Il Matto"];
+const carte = [
+ {nome:"Il Mago",storia:"Sei pronto a iniziare qualcosa di nuovo. Il tuo potenziale è grande."},
+ {nome:"La Papessa",storia:"La risposta che cerchi è dentro di te. Ascolta l’intuizione."},
+ {nome:"L'Imperatrice",storia:"Creatività e abbondanza ti circondano."},
+ {nome:"L'Imperatore",storia:"È tempo di assumerti una responsabilità importante."},
+ {nome:"Il Papa",storia:"Una guida fidata può aiutarti."},
+ {nome:"Gli Amanti",storia:"Una scelta di cuore si presenta."},
+ {nome:"Il Carro",storia:"Avanza con decisione verso il tuo obiettivo."},
+ {nome:"La Forza",storia:"Il coraggio nasce dalla calma."},
+ {nome:"L'Eremita",storia:"Prenditi tempo per riflettere."},
+ {nome:"La Ruota",storia:"Un cambiamento inaspettato è vicino."},
+ {nome:"La Giustizia",storia:"Agisci con onestà."},
+ {nome:"L'Appeso",storia:"Guarda una situazione da un'altra prospettiva."},
+ {nome:"La Morte",storia:"Trasformazione e rinascita imminenti."},
+ {nome:"La Temperanza",storia:"Trova equilibrio."},
+ {nome:"Il Diavolo",storia:"Non lasciarti imprigionare dalle paure."},
+ {nome:"La Torre",storia:"Un cambiamento improvviso ti libererà."},
+ {nome:"La Stella",storia:"La speranza ti accompagna."},
+ {nome:"La Luna",storia:"Fidati dei tuoi sogni."},
+ {nome:"Il Sole",storia:"Gioia e chiarezza sono vicine."},
+ {nome:"Il Giudizio",storia:"Una rinascita ti attende."},
+ {nome:"Il Mondo",storia:"Un ciclo si completa."},
+ {nome:"Il Matto",storia:"Un nuovo viaggio ha inizio."}
+];
 
-const container = document.getElementById("carte");
-const testo = document.getElementById("descrizione");
-
-carte.forEach(nome => {
-  const c = document.createElement("div");
-  c.className = "carta";
-  c.innerText = nome;
-  c.onclick = function() {
-    testo.innerText = "Hai scelto: " + nome;
-  }
-  container.appendChild(c);
-});
-</script>
-
-</body>
-</html>
+function pesca(){
+  const n = Math.floor(Math.random()*carte.length);
+  document.getElem
