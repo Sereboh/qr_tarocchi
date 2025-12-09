@@ -27,7 +27,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  perspective: 1000px;
+  perspective: 1200px;
 }
 
 .card {
@@ -37,7 +37,8 @@ h1 {
   border-radius: 10px;
   cursor: pointer;
   transform-style: preserve-3d;
-  transition: transform 0.8s ease, top 0.8s ease, left 0.8s ease, opacity 0.5s ease;
+  transition: transform 0.6s ease, top 0.6s ease, left 0.6s ease, opacity 0.5s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
 }
 
 .card img {
@@ -52,6 +53,11 @@ h1 {
 
 .card .front {
   transform: rotateY(180deg);
+}
+
+.card:hover {
+  transform: scale(1.15);
+  z-index: 100;
 }
 
 #overlay {
@@ -97,6 +103,23 @@ h1 {
 
 #desc {
   margin-top: 10px;
+  text-align: justify;
+}
+
+#restart {
+  margin-top: 15px;
+  padding: 8px 15px;
+  background: #f4e7c2;
+  color: #111;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#restart:hover {
+  background: #e0d4a0;
 }
 </style>
 </head>
@@ -111,6 +134,7 @@ h1 {
     <img id="imgBig">
     <div id="title"></div>
     <div id="desc"></div>
+    <button id="restart" onclick="restart()">Ricomincia</button>
   </div>
 </div>
 
@@ -122,45 +146,40 @@ h1 {
 // Carte e testi
 const names = [
 "Il Matto","Il Mago","La Papessa","L'Imperatrice","L'Imperatore",
-"Il Papa","Gli Amanti","Il Carro","La Forza","L'Eremita","La Ruota",
-"La Giustizia","L'Appeso","La Morte","La Temperanza","Il Diavolo",
-"La Torre","La Stella","La Luna","Il Sole","Il Giudizio","Il Mondo"
+"Il Papa","Gli Amanti","Il Carro","La Forza","L’Eremita",
+"La Ruota della Fortuna","La Giustizia","L’Appeso","La Morte",
+"La Temperanza","Il Diavolo","La Torre","La Stella","La Luna",
+"Il Sole","Il Giudizio","Il Mondo"
 ];
-const namesEN = [
-"The Fool","The Magician","The High Priestess","The Empress","The Emperor",
-"The Hierophant","The Lovers","The Chariot","Strength","The Hermit",
-"Wheel of Fortune","Justice","The Hanged Man","Death","Temperance",
-"The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"
-];
+
 const texts_IT = [
-"Il Matto: Nuovi inizi, spontaneità e avventura.","Il Mago: Creatività e potere personale.",
-"La Papessa: Saggezza e intuizione.","L'Imperatrice: Fertilità e abbondanza.",
-"Il Imperatore: Stabilità e autorità.","Il Papa: Tradizione e guida spirituale.",
-"Gli Amanti: Amore e scelte importanti.","Il Carro: Determinazione e successo.",
-"La Forza: Coraggio e pazienza.","L'Eremita: Ricerca interiore e saggezza.",
-"La Ruota: Cambiamento e cicli.","La Giustizia: Equilibrio e giustizia.",
-"L'Appeso: Sacrificio e prospettiva.","La Morte: Trasformazione e fine di un ciclo.",
-"La Temperanza: Armonia e moderazione.","Il Diavolo: Tentazione e dipendenze.",
-"La Torre: Rottura e cambiamento improvviso.","La Stella: Speranza e ispirazione.",
-"La Luna: Intuizione e illusioni.","Il Sole: Felicità e successo.",
-"Il Giudizio: Rinascita e giudizio.","Il Mondo: Completamento e realizzazione."
-];
-const texts_EN = [
-"The Fool: New beginnings, spontaneity, adventure.","The Magician: Creativity and personal power.",
-"The High Priestess: Wisdom and intuition.","The Empress: Fertility and abundance.",
-"The Emperor: Stability and authority.","The Hierophant: Tradition and spiritual guidance.",
-"The Lovers: Love and important choices.","The Chariot: Determination and success.",
-"Strength: Courage and patience.","The Hermit: Inner search and wisdom.",
-"Wheel of Fortune: Change and cycles.","Justice: Balance and fairness.",
-"The Hanged Man: Sacrifice and perspective.","Death: Transformation and end of a cycle.",
-"Temperance: Harmony and moderation.","The Devil: Temptation and addictions.",
-"The Tower: Sudden change and disruption.","The Star: Hope and inspiration.",
-"The Moon: Intuition and illusions.","The Sun: Happiness and success.",
-"Judgement: Rebirth and assessment.","The World: Completion and fulfillment."
+"Il Matto / Masaniello — La carta del Matto rappresenta la spontaneità, l’ingenuità e la libertà. È una figura che agisce senza pregiudizi, spesso in modo impulsivo e senza calcolare i rischi. Il Matto è fuori dagli schemi, viaggia senza meta, fiducioso nel suo istinto, ma vulnerabile ai pericoli della strada e pronto a farsi travolgere dal suo stesso caos interiore.",
+"Il Mago / Virgilio — La carta del Mago rappresenta l’abilità, il potere creativo e la padronanza degli strumenti necessari per trasformare la realtà. Il Mago è colui che sa agire con intelligenza, sfruttando le risorse a sua disposizione per raggiungere i propri obiettivi.",
+"La Papessa / Sibilla Cumana — La carta della Papessa rappresenta la saggezza occulta, l’intuizione e la conoscenza spirituale nascosta. È una figura misteriosa e femminile, legata alla dimensione interiore. Simboleggia la comprensione profonda dei misteri della vita e la connessione con il divino, spesso celata sotto un velo di segreti o di silenzio.",
+"L’Imperatrice / Maria Carolina — La carta dell’Imperatrice rappresenta la fertilità, l’abbondanza e il potere creativo. È simbolo di femminilità, maternità e crescita, legata alla natura e al ciclo vitale. L’Imperatrice è una figura che incarna la prosperità e la capacità di governare con dolcezza, ma anche con autorità.",
+"L’Imperatore / Federico II — La carta dell’Imperatore rappresenta l’autorità e il potere terreno. È una figura maschile forte, responsabile e razionale, in grado di portare stabilità.",
+"Il Papa / San Gennaro — La carta del Papa rappresenta l’autorità spirituale, la saggezza, la guida morale e la mediazione tra il divino e l’umano.",
+"Gli Amanti / Sebeto e Megara — La carta degli Amanti rappresenta l’amore, l’unione e la scelta. Simboleggia l’attrazione, l’armonia e l’equilibrio tra opposti, ma anche la necessità di prendere decisioni che possono cambiare il corso della vita.",
+"Il Carro / Maradona — La carta del Carro rappresenta vittoria, determinazione e controllo. Simboleggia il successo ottenuto attraverso la forza di volontà, la disciplina e la capacità di superare gli ostacoli.",
+"La Forza / Femminiello — La carta della Forza rappresenta il coraggio, la determinazione e la capacità di domare le proprie emozioni e istinti, attraverso la calma e la pazienza, piuttosto che con la violenza. Simboleggia il dominio interiore e la tenacia.",
+"L’Eremita / Munaciello — La carta dell’Eremita rappresenta la ricerca interiore, la solitudine volontaria, la saggezza acquisita attraverso l’esperienza e la riflessione. Una figura che si isola per trovare risposte e illuminare il proprio cammino.",
+"La Ruota della Fortuna / Ruota degli Esposti — La carta della Ruota della Fortuna rappresenta il ciclo della vita, il cambiamento e l’imprevedibilità del destino. Simboleggia i flussi e riflussi della sorte, l’alternarsi di momenti favorevoli e sfavorevoli, e la necessità di adattarsi al continuo movimento della vita.",
+"La Giustizia / Maddalena Cerasuolo — La carta della Giustizia rappresenta equilibrio, verità e imparzialità. Simboleggia l’azione equa, la responsabilità e la necessità di agire con correttezza e rettitudine.",
+"L’Appeso / Maria la “Rossa” — La carta dell’Appeso nei tarocchi rappresenta una sospensione temporanea, una pausa forzata e un cambio di prospettiva. Simboleggia il sacrificio, l’abbandono del controllo e la riflessione interiore.",
+"La Morte / Anime Pezzentelle — La carta della Morte nei tarocchi simboleggia trasformazione, cambiamento radicale e fine di un ciclo. Sebbene spesso temuta, non rappresenta necessariamente la morte fisica, ma piuttosto la fine di una fase, il distacco dal passato e l’opportunità di rinascita e rinnovamento.",
+"La Temperanza / Partenope — La carta della Temperanza rappresenta l’armonia, la moderazione, la capacità di fondere opposti per creare unità.",
+"Il Diavolo / Mammone — La carta del Diavolo rappresenta tentazione, schiavitù, desideri materiali o comportamenti nocivi. Simboleggia l’oscurità interiore, la manipolazione e la perdita del controllo, ma anche la possibilità di liberarsi da ciò che ci tiene imprigionati, poiché invita a confrontarsi con le proprie ombre e a superare paure ed ossessioni.",
+"La Torre / Maschio Angioino — La carta della Torre rappresenta distruzione improvvisa, crisi e cambiamenti drammatici. Simboleggia l’abbattimento di strutture consolidate, sia fisiche che emotive, e la necessità di ricostruzione dopo un crollo.",
+"La Stella / Bella ’Mbriana — La carta della Stella rappresenta speranza, guida spirituale e rinnovamento. Un momento di serenità dopo il caos, un faro di luce che indica una via verso la guarigione e l’armonia. È una carta di ispirazione, bellezza e fiducia nel futuro.",
+"La Luna / Janare — La carta della Luna rappresenta l’inconscio, l’intuizione e i misteri nascosti. Richiama illusioni, inganni e paure, simboleggiando il lato oscuro della psiche e i cicli della natura.",
+"Il Sole / Pulcinella — La carta del Sole rappresenta gioia, vitalità e successo, simboleggiando chiarezza e realizzazione personale. Porta ottimismo e soddisfazione, illuminando le ombre e favorendo la crescita e il rinnovamento.",
+"Il Giudizio / Vesuvio — La carta del Giudizio rappresenta la resa dei conti e la rinascita. È una carta che indica risveglio e riflessione, dove si fa il bilancio delle proprie scelte e azioni, e ci si prepara ad un nuovo inizio.",
+"Il Mondo / Artisti Napoletani — La carta del Mondo rappresenta il completamento, l’armonia e il successo totale. Simboleggia la realizzazione dei propri obiettivi e la celebrazione della pienezza e dell’equilibrio raggiunti."
 ];
 
 let lang = "it";
 const deck = document.getElementById("deck");
+let cards = [];
 
 // Shuffle array
 function shuffleArray(array){
@@ -172,46 +191,68 @@ function shuffleArray(array){
 }
 
 // Create cards
-let indices = [...Array(names.length).keys()];
-indices = shuffleArray(indices);
+function createCards(){
+  deck.innerHTML = "";
+  let indices = [...Array(names.length).keys()];
+  indices = shuffleArray(indices);
 
-const cards=[];
-indices.forEach((i)=>{
-  const c = document.createElement("div");
-  c.className = "card";
+  cards = [];
+  indices.forEach((i)=>{
+    const c = document.createElement("div");
+    c.className = "card";
 
-  const back = document.createElement("img");
-  back.src = "back.jpg";
-  back.className = "back";
-  c.appendChild(back);
+    const back = document.createElement("img");
+    back.src = "back.jpg";
+    back.className = "back";
+    c.appendChild(back);
 
-  const front = document.createElement("img");
-  front.src = "img/"+i+"_"+names[i].toLowerCase().replace(/\s/g,"")+".jpg";
-  front.className = "front";
-  c.appendChild(front);
+    const front = document.createElement("img");
+    front.src = "img/"+i+"_"+names[i].toLowerCase().replace(/\s/g,"")+".jpg";
+    front.className = "front";
+    c.appendChild(front);
 
-  c.dataset.index = i;
-  c.style.top = "50%";
-  c.style.left = "50%";
-  c.style.transform = "translate(-50%,-50%) rotate(0deg)";
-  c.onclick = ()=>flipCard(c);
-  deck.appendChild(c);
-  cards.push(c);
-});
+    c.dataset.index = i;
+    c.style.top = "50%";
+    c.style.left = "50%";
+    c.style.transform = "translate(-50%,-50%) rotate(0deg)";
+    c.onclick = ()=>flipCard(c);
+    deck.appendChild(c);
+    cards.push(c);
+  });
+  spreadCards();
+}
 
-// Smooth fan spread using requestAnimationFrame
+// Ventaglio a semicerchio con pancia verso il basso e scaling progressivo
 function spreadCards(){
-  const spread = Math.min(80, deck.offsetWidth / 10);
-  const radius = deck.offsetWidth / 3;
+  const radius = deck.offsetWidth / 2.5;
+  const centerX = deck.offsetWidth / 2;
+  const centerY = deck.offsetHeight / 2 - 50;
+  const totalAngle = Math.PI;
+  const step = totalAngle / (cards.length - 1);
+
   cards.forEach((c, idx)=>{
-    const angle = (idx - (cards.length-1)/2) * (spread / (cards.length-1));
-    const rad = angle * Math.PI / 180;
-    const x = deck.offsetWidth/2 + radius*Math.sin(rad) - 50;
-    const y = deck.offsetHeight/2 - radius*(1-Math.cos(rad)) - 75;
+    const angle = step * idx - totalAngle/2;
+    const x = centerX + radius * Math.sin(angle) - 50;
+    const y = centerY + radius * (1 - Math.cos(angle)) - 75;
+
+    // Scaling progressivo: centrale più grande, esterne più piccole
+    const scale = 1 + 0.2 * Math.cos(angle);
+
+    const rotate = angle * 180 / Math.PI * 0.5;
+
     c.style.left = x + "px";
     c.style.top = y + "px";
-    c.style.transform = `translate(0,0) rotate(${angle}deg)`;
+    c.style.transform = `translate(0,0) rotate(${rotate}deg) scale(${scale})`;
     c.style.opacity = 1;
+
+    c.onmouseenter = ()=>{
+      c.style.transform = `translate(0,-10px) rotate(${rotate}deg) scale(${scale * 1.05})`;
+      c.style.zIndex = 100;
+    }
+    c.onmouseleave = ()=>{
+      c.style.transform = `translate(0,0) rotate(${rotate}deg) scale(${scale})`;
+      c.style.zIndex = "";
+    }
   });
 }
 
@@ -220,7 +261,7 @@ function flipCard(card){
   card.style.transform += " rotateY(180deg)";
   setTimeout(()=>{
     openCard(parseInt(card.dataset.index));
-  }, 800);
+  }, 500);
 }
 
 // Overlay
@@ -228,8 +269,8 @@ function openCard(i){
   const overlay = document.getElementById("overlay");
   overlay.classList.add("show");
   document.getElementById("imgBig").src="img/"+i+"_"+names[i].toLowerCase().replace(/\s/g,"")+".jpg";
-  document.getElementById("title").innerText= lang=="it"? names[i]:namesEN[i];
-  document.getElementById("desc").innerText= lang=="it"? texts_IT[i]:texts_EN[i];
+  document.getElementById("title").innerText= names[i];
+  document.getElementById("desc").innerText= texts_IT[i];
 }
 
 // Close overlay
@@ -237,17 +278,17 @@ function closeCard(){
   document.getElementById("overlay").classList.remove("show");
 }
 
-// Set language
-function setLang(l){
-  lang = l;
-  document.getElementById("titleMain").innerText= l=="it"?"Scegli la tua carta":"Choose your card";
+// Restart deck
+function restart(){
+  closeCard();
+  createCards();
 }
 
-// Play music safely
+// Play music
 window.addEventListener("load", ()=>{
-  spreadCards();
+  createCards();
   const bg = document.getElementById("bgmusic");
-  bg.play().catch(()=>{console.log("Click anywhere to play music")});
+  bg.play().catch(()=>{console.log("Clicca per attivare la musica")});
 });
 </script>
 </body>
