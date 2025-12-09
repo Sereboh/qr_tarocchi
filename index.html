@@ -7,161 +7,148 @@
 
 <style>
 body{
-  background:radial-gradient(circle at top,#150f1f,#000);
-  color:#f7e7c6;
-  font-family:Georgia,serif;
-  text-align:center;
-  padding:15px;
+ background:radial-gradient(circle at top,#130f22,#000);
+ color:#f4e7c2;
+ text-align:center;
+ font-family:Georgia,serif;
+ padding:15px;
 }
 
-h1{letter-spacing:3px}
+h1{letter-spacing:2px}
 
-#lang button{
-  margin:5px;
-  border:none;
-  background:#c9a45c;
-  padding:8px 15px;
-  border-radius:6px;
-  cursor:pointer;
+button{
+ background:#c4a35f;
+ border:none;
+ padding:10px 18px;
+ border-radius:8px;
+ cursor:pointer;
+ margin:5px;
 }
 
 #grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(90px,1fr));
-  gap:10px;
-  margin-top:20px;
+ display:grid;
+ grid-template-columns:repeat(auto-fit, minmax(90px,1fr));
+ gap:15px;
+ margin-top:20px;
 }
 
 .card{
-  height:140px;
-  border-radius:10px;
-  background:url("back.jpg") center/cover;
-  cursor:pointer;
-  transition:transform 0.3s;
+ width:100%;
+ height:140px;
+ background:url('back.jpg') center/cover no-repeat;
+ border-radius:10px;
+ cursor:pointer;
+ transition:transform .3s;
 }
 
 .card:hover{
-  transform:scale(1.07);
+ transform:scale(1.05);
 }
 
 #overlay{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.9);
-  align-items:center;
-  justify-content:center;
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,0.9);
+ display:none;
+ align-items:center;
+ justify-content:center;
 }
 
-#detail{
-  background:#111;
-  padding:20px;
-  border-radius:15px;
-  max-width:360px;
+#box{
+ background:#111;
+ padding:20px;
+ border-radius:14px;
+ max-width:340px;
 }
 
-#detail img{
-  width:100%;
-  border-radius:10px;
+#box img{
+ width:100%;
+ border-radius:10px;
 }
 
 #title{
-  font-size:26px;
-  margin-top:10px;
+ margin-top:10px;
+ font-size:22px;
 }
 
-#text{
-  line-height:1.5;
+#desc{
+ margin-top:10px;
 }
 </style>
 </head>
+
 <body>
 
-<h1 id="t_title">Scegli la tua carta</h1>
+<h1 id="titleMain">Scegli la tua carta</h1>
 
-<div id="lang">
-<button onclick="setLang('it')">Italiano</button>
-<button onclick="setLang('en')">English</button>
-</div>
+<button onclick="setLang('it')">🇮🇹 Italiano</button>
+<button onclick="setLang('en')">🇬🇧 English</button>
+
+<br>
+<button onclick="playMusic()">🎵 Musica</button>
 
 <div id="grid"></div>
 
 <div id="overlay" onclick="closeCard()">
-  <div id="detail" onclick="event.stopPropagation()">
-    <img id="bigImg">
+  <div id="box" onclick="event.stopPropagation()">
+    <img id="imgBig">
     <div id="title"></div>
-    <div id="text"></div>
+    <div id="desc"></div>
   </div>
 </div>
 
-<audio autoplay loop hidden>
+<audio id="bgmusic" loop>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 let lang="it";
 
-const cards=[
-{
-it:"Il Mago",
-en:"The Magician",
-text_it:"Il potere di creare è nelle tue mani.",
-text_en:"The power to create is in your hands.",
-img:"img/1_mago.jpg"
-},
-{
-it:"La Papessa",
-en:"The High Priestess",
-text_it:"Segui la tua intuizione.",
-text_en:"Trust your intuition.",
-img:"img/2_papessa.jpg"
-},
-{
-it:"L'Imperatrice",
-en:"The Empress",
-text_it:"Creatività e protezione.",
-text_en:"Creativity and care.",
-img:"img/3_imperatrice.jpg"
-},
-{
-it:"L'Imperatore",
-en:"The Emperor",
-text_it:"Struttura e forza.",
-text_en:"Authority and strength.",
-img:"img/4_imperatore.jpg"
-}
+const names=[
+"Il Matto","Il Mago","La Papessa","L'Imperatrice","L'Imperatore",
+"Il Papa","Gli Amanti","Il Carro","La Forza","L'Eremita","La Ruota",
+"La Giustizia","L'Appeso","La Morte","La Temperanza","Il Diavolo",
+"La Torre","La Stella","La Luna","Il Sole","Il Giudizio","Il Mondo"
 ];
 
-// ▶️ Aggiungi qui le altre carte
+const namesEN=[
+"The Fool","The Magician","The High Priestess","The Empress","The Emperor",
+"The Hierophant","The Lovers","The Chariot","Strength","The Hermit",
+"Wheel of Fortune","Justice","The Hanged Man","Death","Temperance",
+"The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"
+];
 
-function setLang(l){
-  lang=l;
-  document.getElementById("t_title").innerText=
-    lang=="it"?"Scegli la tua carta":"Choose your card";
-}
+const texts_IT = names.map(n=> "Messaggio della carta: " + n);
+const texts_EN = namesEN.map(n=> "Message of the card: " + n);
 
 const grid=document.getElementById("grid");
 
-cards.forEach(c=>{
-  let d=document.createElement("div");
-  d.className="card";
-  d.onclick=()=>openCard(c);
-  grid.appendChild(d);
+names.forEach((n,i)=>{
+ let d=document.createElement("div");
+ d.className="card";
+ d.onclick=()=>openCard(i);
+ grid.appendChild(d);
 });
 
-function openCard(c){
-  document.getElementById("overlay").style.display="flex";
-  document.getElementById("bigImg").src=c.img;
-  document.getElementById("title").innerText=
-      lang=="it"?c.it:c.en;
-  document.getElementById("text").innerText=
-      lang=="it"?c.text_it:c.text_en;
+function openCard(i){
+ document.getElementById("overlay").style.display="flex";
+ document.getElementById("imgBig").src="img/"+i+"_"+names[i].toLowerCase().replace(/\\s/g,"")+".jpg";
+ document.getElementById("title").innerText= lang=="it"? names[i]:namesEN[i];
+ document.getElementById("desc").innerText= lang=="it"? texts_IT[i]:texts_EN[i];
 }
 
 function closeCard(){
-  document.getElementById("overlay").style.display="none";
+ document.getElementById("overlay").style.display="none";
+}
+
+function setLang(l){
+ lang=l;
+ document.getElementById("titleMain").innerText= l=="it"?"Scegli la tua carta":"Choose your card";
+}
+
+function playMusic(){
+ document.getElementById("bgmusic").play();
 }
 </script>
-
 </body>
 </html>
