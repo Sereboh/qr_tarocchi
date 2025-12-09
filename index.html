@@ -5,81 +5,98 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mystic Tarot</title>
 <style>
-body{
- background:radial-gradient(circle at top,#130f22,#000);
- color:#f4e7c2;
- font-family:Georgia,serif;
- overflow:hidden;
- margin:0;
- padding:0;
+body {
+  background: radial-gradient(circle at top,#130f22,#000);
+  color: #f4e7c2;
+  font-family: Georgia,serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
-h1{
- text-align:center;
- margin:20px 0;
- letter-spacing:2px;
+h1 {
+  text-align: center;
+  margin: 20px 0;
+  letter-spacing: 2px;
 }
 
-#deck{
- position:relative;
- width:100%;
- height:400px;
- margin-top:50px;
+#deck {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px;
 }
 
-.card{
- position:absolute;
- width:100px;
- height:150px;
- background:url('back.jpg') center/cover no-repeat;
- border-radius:10px;
- cursor:pointer;
- transition: transform 1s, top 1s, left 1s, opacity 1s;
+.card {
+  position: absolute;
+  width: 100px;
+  height: 150px;
+  border-radius: 10px;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.8s ease, top 0.8s ease, left 0.8s ease, opacity 0.5s ease;
 }
 
-#overlay{
- position:fixed;
- inset:0;
- background:rgba(0,0,0,0.9);
- display:flex;
- align-items:center;
- justify-content:center;
- opacity:0;
- pointer-events:none;
- transition: opacity 0.5s;
+.card img {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
-#overlay.show{
- opacity:1;
- pointer-events:auto;
+.card .front {
+  transform: rotateY(180deg);
 }
 
-#box{
- background:#111;
- padding:20px;
- border-radius:14px;
- max-width:340px;
- text-align:center;
- transform: scale(0.5) rotate(-15deg);
- transition: transform 0.7s;
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s;
 }
 
-#overlay.show #box{
- transform: scale(1) rotate(0deg);
+#overlay.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-#box img{
- width:100%;
- border-radius:10px;
+#box {
+  background: #111;
+  padding: 20px;
+  border-radius: 14px;
+  max-width: 340px;
+  text-align: center;
+  transform: scale(0.5) rotate(-15deg);
+  transition: transform 0.7s;
 }
 
-#title{
- margin-top:10px;
- font-size:22px;
+#overlay.show #box {
+  transform: scale(1) rotate(0deg);
 }
 
-#desc{
- margin-top:10px;
+#box img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+#title {
+  margin-top: 10px;
+  font-size: 22px;
+}
+
+#desc {
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -102,74 +119,50 @@ h1{
 </audio>
 
 <script>
+// Carte e testi
 const names = [
 "Il Matto","Il Mago","La Papessa","L'Imperatrice","L'Imperatore",
 "Il Papa","Gli Amanti","Il Carro","La Forza","L'Eremita","La Ruota",
 "La Giustizia","L'Appeso","La Morte","La Temperanza","Il Diavolo",
 "La Torre","La Stella","La Luna","Il Sole","Il Giudizio","Il Mondo"
 ];
-
 const namesEN = [
 "The Fool","The Magician","The High Priestess","The Empress","The Emperor",
 "The Hierophant","The Lovers","The Chariot","Strength","The Hermit",
 "Wheel of Fortune","Justice","The Hanged Man","Death","Temperance",
 "The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"
 ];
-
 const texts_IT = [
-"Il Matto: Nuovi inizi, spontaneità e avventura.",
-"Il Mago: Creatività e potere personale.",
-"La Papessa: Saggezza e intuizione.",
-"L'Imperatrice: Fertilità e abbondanza.",
-"L'Imperatore: Stabilità e autorità.",
-"Il Papa: Tradizione e guida spirituale.",
-"Gli Amanti: Amore e scelte importanti.",
-"Il Carro: Determinazione e successo.",
-"La Forza: Coraggio e pazienza.",
-"L'Eremita: Ricerca interiore e saggezza.",
-"La Ruota: Cambiamento e cicli.",
-"La Giustizia: Equilibrio e giustizia.",
-"L'Appeso: Sacrificio e prospettiva.",
-"La Morte: Trasformazione e fine di un ciclo.",
-"La Temperanza: Armonia e moderazione.",
-"Il Diavolo: Tentazione e dipendenze.",
-"La Torre: Rottura e cambiamento improvviso.",
-"La Stella: Speranza e ispirazione.",
-"La Luna: Intuizione e illusioni.",
-"Il Sole: Felicità e successo.",
-"Il Giudizio: Rinascita e giudizio.",
-"Il Mondo: Completamento e realizzazione."
+"Il Matto: Nuovi inizi, spontaneità e avventura.","Il Mago: Creatività e potere personale.",
+"La Papessa: Saggezza e intuizione.","L'Imperatrice: Fertilità e abbondanza.",
+"Il Imperatore: Stabilità e autorità.","Il Papa: Tradizione e guida spirituale.",
+"Gli Amanti: Amore e scelte importanti.","Il Carro: Determinazione e successo.",
+"La Forza: Coraggio e pazienza.","L'Eremita: Ricerca interiore e saggezza.",
+"La Ruota: Cambiamento e cicli.","La Giustizia: Equilibrio e giustizia.",
+"L'Appeso: Sacrificio e prospettiva.","La Morte: Trasformazione e fine di un ciclo.",
+"La Temperanza: Armonia e moderazione.","Il Diavolo: Tentazione e dipendenze.",
+"La Torre: Rottura e cambiamento improvviso.","La Stella: Speranza e ispirazione.",
+"La Luna: Intuizione e illusioni.","Il Sole: Felicità e successo.",
+"Il Giudizio: Rinascita e giudizio.","Il Mondo: Completamento e realizzazione."
 ];
-
 const texts_EN = [
-"The Fool: New beginnings, spontaneity, adventure.",
-"The Magician: Creativity and personal power.",
-"The High Priestess: Wisdom and intuition.",
-"The Empress: Fertility and abundance.",
-"The Emperor: Stability and authority.",
-"The Hierophant: Tradition and spiritual guidance.",
-"The Lovers: Love and important choices.",
-"The Chariot: Determination and success.",
-"Strength: Courage and patience.",
-"The Hermit: Inner search and wisdom.",
-"Wheel of Fortune: Change and cycles.",
-"Justice: Balance and fairness.",
-"The Hanged Man: Sacrifice and perspective.",
-"Death: Transformation and end of a cycle.",
-"Temperance: Harmony and moderation.",
-"The Devil: Temptation and addictions.",
-"The Tower: Sudden change and disruption.",
-"The Star: Hope and inspiration.",
-"The Moon: Intuition and illusions.",
-"The Sun: Happiness and success.",
-"Judgement: Rebirth and assessment.",
-"The World: Completion and fulfillment."
+"The Fool: New beginnings, spontaneity, adventure.","The Magician: Creativity and personal power.",
+"The High Priestess: Wisdom and intuition.","The Empress: Fertility and abundance.",
+"The Emperor: Stability and authority.","The Hierophant: Tradition and spiritual guidance.",
+"The Lovers: Love and important choices.","The Chariot: Determination and success.",
+"Strength: Courage and patience.","The Hermit: Inner search and wisdom.",
+"Wheel of Fortune: Change and cycles.","Justice: Balance and fairness.",
+"The Hanged Man: Sacrifice and perspective.","Death: Transformation and end of a cycle.",
+"Temperance: Harmony and moderation.","The Devil: Temptation and addictions.",
+"The Tower: Sudden change and disruption.","The Star: Hope and inspiration.",
+"The Moon: Intuition and illusions.","The Sun: Happiness and success.",
+"Judgement: Rebirth and assessment.","The World: Completion and fulfillment."
 ];
 
-let lang="it";
-const deck=document.getElementById("deck");
+let lang = "it";
+const deck = document.getElementById("deck");
 
-// Mescola array
+// Shuffle array
 function shuffleArray(array){
   for(let i=array.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
@@ -178,57 +171,59 @@ function shuffleArray(array){
   return array;
 }
 
-// Creazione carte
+// Create cards
 let indices = [...Array(names.length).keys()];
 indices = shuffleArray(indices);
 
 const cards=[];
 indices.forEach((i)=>{
-  const c=document.createElement("div");
-  c.className="card";
-  c.dataset.index=i;
-  c.style.top="125px";
-  c.style.left="50%";
-  c.style.transform="translateX(-50%) rotate(0deg)";
-  c.style.opacity=0;
-  c.onclick=()=>selectCard(c);
+  const c = document.createElement("div");
+  c.className = "card";
+
+  const back = document.createElement("img");
+  back.src = "back.jpg";
+  back.className = "back";
+  c.appendChild(back);
+
+  const front = document.createElement("img");
+  front.src = "img/"+i+"_"+names[i].toLowerCase().replace(/\s/g,"")+".jpg";
+  front.className = "front";
+  c.appendChild(front);
+
+  c.dataset.index = i;
+  c.style.top = "50%";
+  c.style.left = "50%";
+  c.style.transform = "translate(-50%,-50%) rotate(0deg)";
+  c.onclick = ()=>flipCard(c);
   deck.appendChild(c);
   cards.push(c);
 });
 
-// Animazione ventaglio
-window.onload = ()=>{
-  document.getElementById("bgmusic").play().catch(()=>{});
-  const spread = 60;
-  const centerX = deck.offsetWidth/2;
-  const radius = 200;
-  cards.forEach((c,idx)=>{
-    const angle = (idx/(cards.length-1) - 0.5)*spread; 
+// Smooth fan spread using requestAnimationFrame
+function spreadCards(){
+  const spread = Math.min(80, deck.offsetWidth / 10);
+  const radius = deck.offsetWidth / 3;
+  cards.forEach((c, idx)=>{
+    const angle = (idx - (cards.length-1)/2) * (spread / (cards.length-1));
     const rad = angle * Math.PI / 180;
-    const x = centerX + radius*Math.sin(rad) - 50;
-    const y = 125 - radius*(1-Math.cos(rad));
-    setTimeout(()=>{
-      c.style.left=x+"px";
-      c.style.top=y+"px";
-      c.style.transform=`rotate(${angle}deg)`;
-      c.style.opacity=1;
-    }, idx*100);
+    const x = deck.offsetWidth/2 + radius*Math.sin(rad) - 50;
+    const y = deck.offsetHeight/2 - radius*(1-Math.cos(rad)) - 75;
+    c.style.left = x + "px";
+    c.style.top = y + "px";
+    c.style.transform = `translate(0,0) rotate(${angle}deg)`;
+    c.style.opacity = 1;
   });
-};
-
-// Selezione carta con effetto sparizione carte rimanenti
-function selectCard(card){
-  const i = parseInt(card.dataset.index);
-  cards.forEach(c=>{
-    if(c!==card){
-      c.style.opacity=0;
-      c.style.transform="scale(0)";
-    }
-  });
-  setTimeout(()=>openCard(i),500);
 }
 
-// Overlay con effetto sventolio
+// Flip card
+function flipCard(card){
+  card.style.transform += " rotateY(180deg)";
+  setTimeout(()=>{
+    openCard(parseInt(card.dataset.index));
+  }, 800);
+}
+
+// Overlay
 function openCard(i){
   const overlay = document.getElementById("overlay");
   overlay.classList.add("show");
@@ -237,17 +232,23 @@ function openCard(i){
   document.getElementById("desc").innerText= lang=="it"? texts_IT[i]:texts_EN[i];
 }
 
-// Chiudi overlay
+// Close overlay
 function closeCard(){
-  const overlay = document.getElementById("overlay");
-  overlay.classList.remove("show");
+  document.getElementById("overlay").classList.remove("show");
 }
 
-// Cambio lingua
+// Set language
 function setLang(l){
-  lang=l;
+  lang = l;
   document.getElementById("titleMain").innerText= l=="it"?"Scegli la tua carta":"Choose your card";
 }
+
+// Play music safely
+window.addEventListener("load", ()=>{
+  spreadCards();
+  const bg = document.getElementById("bgmusic");
+  bg.play().catch(()=>{console.log("Click anywhere to play music")});
+});
 </script>
 </body>
 </html>
