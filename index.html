@@ -34,16 +34,24 @@ h1{
  background:url('back.jpg') center/cover no-repeat;
  border-radius:10px;
  cursor:pointer;
- transition: transform 1s, top 1s, left 1s;
+ transition: transform 1s, top 1s, left 1s, opacity 1s;
 }
 
 #overlay{
  position:fixed;
  inset:0;
  background:rgba(0,0,0,0.9);
- display:none;
+ display:flex;
  align-items:center;
  justify-content:center;
+ opacity:0;
+ pointer-events:none;
+ transition: opacity 0.5s;
+}
+
+#overlay.show{
+ opacity:1;
+ pointer-events:auto;
 }
 
 #box{
@@ -52,6 +60,12 @@ h1{
  border-radius:14px;
  max-width:340px;
  text-align:center;
+ transform: scale(0.5) rotate(-15deg);
+ transition: transform 0.7s;
+}
+
+#overlay.show #box{
+ transform: scale(1) rotate(0deg);
 }
 
 #box img{
@@ -106,8 +120,8 @@ const texts_IT = [
 "Il Matto: Nuovi inizi, spontaneità e avventura.",
 "Il Mago: Creatività e potere personale.",
 "La Papessa: Saggezza e intuizione.",
-"La Imperatrice: Fertilità e abbondanza.",
-"La Imperatore: Stabilità e autorità.",
+"L'Imperatrice: Fertilità e abbondanza.",
+"L'Imperatore: Stabilità e autorità.",
 "Il Papa: Tradizione e guida spirituale.",
 "Gli Amanti: Amore e scelte importanti.",
 "Il Carro: Determinazione e successo.",
@@ -146,3 +160,94 @@ const texts_EN = [
 "The Devil: Temptation and addictions.",
 "The Tower: Sudden change and disruption.",
 "The Star: Hope and inspiration.",
+"The Moon: Intuition and illusions.",
+"The Sun: Happiness and success.",
+"Judgement: Rebirth and assessment.",
+"The World: Completion and fulfillment."
+];
+
+let lang="it";
+const deck=document.getElementById("deck");
+
+// Mescola array
+function shuffleArray(array){
+  for(let i=array.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [array[i],array[j]]=[array[j],array[i]];
+  }
+  return array;
+}
+
+// Creazione carte
+let indices = [...Array(names.length).keys()];
+indices = shuffleArray(indices);
+
+const cards=[];
+indices.forEach((i)=>{
+  const c=document.createElement("div");
+  c.className="card";
+  c.dataset.index=i;
+  c.style.top="125px";
+  c.style.left="50%";
+  c.style.transform="translateX(-50%) rotate(0deg)";
+  c.style.opacity=0;
+  c.onclick=()=>selectCard(c);
+  deck.appendChild(c);
+  cards.push(c);
+});
+
+// Animazione ventaglio
+window.onload = ()=>{
+  document.getElementById("bgmusic").play().catch(()=>{});
+  const spread = 60;
+  const centerX = deck.offsetWidth/2;
+  const radius = 200;
+  cards.forEach((c,idx)=>{
+    const angle = (idx/(cards.length-1) - 0.5)*spread; 
+    const rad = angle * Math.PI / 180;
+    const x = centerX + radius*Math.sin(rad) - 50;
+    const y = 125 - radius*(1-Math.cos(rad));
+    setTimeout(()=>{
+      c.style.left=x+"px";
+      c.style.top=y+"px";
+      c.style.transform=`rotate(${angle}deg)`;
+      c.style.opacity=1;
+    }, idx*100);
+  });
+};
+
+// Selezione carta con effetto sparizione carte rimanenti
+function selectCard(card){
+  const i = parseInt(card.dataset.index);
+  cards.forEach(c=>{
+    if(c!==card){
+      c.style.opacity=0;
+      c.style.transform="scale(0)";
+    }
+  });
+  setTimeout(()=>openCard(i),500);
+}
+
+// Overlay con effetto sventolio
+function openCard(i){
+  const overlay = document.getElementById("overlay");
+  overlay.classList.add("show");
+  document.getElementById("imgBig").src="img/"+i+"_"+names[i].toLowerCase().replace(/\s/g,"")+".jpg";
+  document.getElementById("title").innerText= lang=="it"? names[i]:namesEN[i];
+  document.getElementById("desc").innerText= lang=="it"? texts_IT[i]:texts_EN[i];
+}
+
+// Chiudi overlay
+function closeCard(){
+  const overlay = document.getElementById("overlay");
+  overlay.classList.remove("show");
+}
+
+// Cambio lingua
+function setLang(l){
+  lang=l;
+  document.getElementById("titleMain").innerText= l=="it"?"Scegli la tua carta":"Choose your card";
+}
+</script>
+</body>
+</html>
