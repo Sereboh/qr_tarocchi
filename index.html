@@ -5,113 +5,97 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Mystic Tarot</title>
 <style>
-  :root{
-    --fg:#f4e7c2;
-    --bg1:#130f22;
-    --bg2:#000;
-    --card-w:110px;
-    --card-h:160px;
-  }
-  html,body{height:100%}
-  body{
-    margin:0;
-    font-family: Georgia,serif;
-    color:var(--fg);
-    background: radial-gradient(circle at top,var(--bg1),var(--bg2));
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    overflow-x:hidden;
-  }
-
-  header{display:flex;justify-content:space-between;align-items:center;padding:12px 18px}
-  h1{margin:0;font-size:20px;letter-spacing:2px}
-
-  .controls{display:flex;gap:8px;align-items:center}
-  button.ctrl{
-    background:rgba(34,25,51,0.55);
-    color:var(--fg);
-    border:1px solid rgba(147,116,201,0.22);
-    padding:8px 12px;border-radius:10px;
-    cursor:pointer;font-size:14px;
-    backdrop-filter: blur(4px);
-  }
-
-  #deck{
-    position:relative;
-    width:100%;
-    height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    perspective:1400px;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .card{
-    position:absolute;
-    width:var(--card-w);
-    height:var(--card-h);
-    border-radius:10px;
-    background-size:cover;
-    background-position:center;
-    transform-origin:center bottom;
-    cursor:pointer;
-    opacity:0;
-    transition: box-shadow .18s ease, transform .72s cubic-bezier(.2,.9,.3,1), left .72s ease, top .72s ease, opacity .28s;
-    will-change: transform, left, top, opacity;
-    box-shadow: 0 14px 36px rgba(0,0,0,0.6);
-    border:2px solid rgba(0,0,0,0.12);
-    overflow:hidden;
-  }
-
-  .card.glow{ filter: drop-shadow(0 0 14px rgba(147,116,201,0.32)); }
-
-  .card:hover{
-    transform: translateY(-10px) scale(1.06);
-    z-index:3000;
-    box-shadow: 0 28px 56px rgba(0,0,0,0.7);
-  }
-
-  .stack-card{ transition: transform .9s ease, opacity .5s; }
-  .stack-pulse{ animation: breathe 2.6s infinite; transform-origin:center; }
-  @keyframes breathe{
-    0%{ transform: translateX(-50%) translateY(-50%) rotate(0deg) scale(1) }
-    50%{ transform: translateX(-50%) translateY(-54%) rotate(0deg) scale(1.022) }
-    100%{ transform: translateX(-50%) translateY(-50%) rotate(0deg) scale(1) }
-  }
-
-  .shake{ animation: shakeit .42s cubic-bezier(.4,0,.2,1); transform-origin:center; }
-  @keyframes shakeit{
-    0%{ transform: translateX(-50%) rotate(0deg) }
-    25%{ transform: translateX(calc(-50% + 6px)) rotate(-1.6deg) }
-    50%{ transform: translateX(calc(-50% - 6px)) rotate(1.6deg) }
-    75%{ transform: translateX(calc(-50% + 3px)) rotate(-0.8deg) }
-    100%{ transform: translateX(-50%) rotate(0deg) }
-  }
-
-  #overlay{
-    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-    background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.8));
-    opacity:0;pointer-events:none;transition:opacity .28s ease;
-    padding:18px;
-  }
-  #overlay.show{ opacity:1; pointer-events:auto; }
-
-  #box{
-    width:100%;max-width:520px;background:linear-gradient(180deg,#0f0f10,#111111);
-    border-radius:12px;padding:18px;box-shadow:0 20px 66px rgba(0,0,0,0.7);
-    max-height:92vh;overflow:auto;transform-origin:center;transition:transform .32s cubic-bezier(.2,.9,.3,1);
-  }
-  #box img{width:100%;border-radius:8px;display:block}
-  #title{margin-top:12px;font-size:20px}
-  #desc{margin-top:10px;line-height:1.45;color:#e8dfc6;text-align:justify}
-  #restart{margin-top:14px;padding:10px 14px;border-radius:10px;background:#2b1f3a;border:1px solid rgba(147,116,201,0.18);color:var(--fg);cursor:pointer}
-
-  @media (max-width:640px){
-    :root{ --card-w:88px; --card-h:128px }
-    header{padding:8px}
-    #box{max-width:94%}
-  }
+:root{
+  --fg:#f4e7c2;
+  --bg1:#130f22;
+  --bg2:#000;
+  --card-w:110px;
+  --card-h:160px;
+}
+html,body{height:100%;margin:0;font-family:Georgia,serif;color:var(--fg);
+  background: radial-gradient(circle at top,var(--bg1),var(--bg2));
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 18px}
+h1{margin:0;font-size:20px;letter-spacing:2px}
+.controls{display:flex;gap:8px;align-items:center}
+button.ctrl{
+  background:rgba(34,25,51,0.55);
+  color:var(--fg);
+  border:1px solid rgba(147,116,201,0.22);
+  padding:8px 12px;border-radius:10px;
+  cursor:pointer;font-size:14px;
+  backdrop-filter: blur(4px);
+}
+#deck{
+  position:relative;
+  width:100%;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  perspective:1400px;
+  -webkit-tap-highlight-color: transparent;
+}
+.card{
+  position:absolute;
+  width:var(--card-w);
+  height:var(--card-h);
+  border-radius:10px;
+  background-size:cover;
+  background-position:center;
+  transform-origin:center bottom;
+  cursor:pointer;
+  opacity:0;
+  transition: box-shadow .18s ease, transform .72s cubic-bezier(.2,.9,.3,1), left .72s ease, top .72s ease, opacity .28s;
+  will-change: transform, left, top, opacity;
+  box-shadow: 0 14px 36px rgba(0,0,0,0.6);
+  border:2px solid rgba(0,0,0,0.12);
+  overflow:hidden;
+}
+.card.glow{ filter: drop-shadow(0 0 14px rgba(147,116,201,0.32)); }
+.card:hover{
+  transform: translateY(-10px) scale(1.06);
+  z-index:3000;
+  box-shadow: 0 28px 56px rgba(0,0,0,0.7);
+}
+.stack-card{ transition: transform .9s ease, opacity .5s; }
+.stack-pulse{ animation: breathe 2.6s infinite; transform-origin:center; }
+@keyframes breathe{
+  0%{ transform: translateX(-50%) translateY(-50%) rotate(0deg) scale(1) }
+  50%{ transform: translateX(-50%) translateY(-54%) rotate(0deg) scale(1.022) }
+  100%{ transform: translateX(-50%) translateY(-50%) rotate(0deg) scale(1) }
+}
+.shake{ animation: shakeit .42s cubic-bezier(.4,0,.2,1); transform-origin:center; }
+@keyframes shakeit{
+  0%{ transform: translateX(-50%) rotate(0deg) }
+  25%{ transform: translateX(calc(-50% + 6px)) rotate(-1.6deg) }
+  50%{ transform: translateX(calc(-50% - 6px)) rotate(1.6deg) }
+  75%{ transform: translateX(calc(-50% + 3px)) rotate(-0.8deg) }
+  100%{ transform: translateX(-50%) rotate(0deg) }
+}
+#overlay{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.8));
+  opacity:0;pointer-events:none;transition:opacity .28s ease;
+  padding:18px;
+}
+#overlay.show{ opacity:1; pointer-events:auto; }
+#box{
+  width:100%;max-width:520px;background:linear-gradient(180deg,#0f0f10,#111111);
+  border-radius:12px;padding:18px;box-shadow:0 20px 66px rgba(0,0,0,0.7);
+  max-height:92vh;overflow:auto;transform-origin:center;transition:transform .32s cubic-bezier(.2,.9,.3,1);
+}
+#box img{width:100%;border-radius:8px;display:block}
+#title{margin-top:12px;font-size:20px}
+#desc{margin-top:10px;line-height:1.45;color:#e8dfc6;text-align:justify}
+#restart{margin-top:14px;padding:10px 14px;border-radius:10px;background:#2b1f3a;border:1px solid rgba(147,116,201,0.18);color:var(--fg);cursor:pointer}
+@media (max-width:640px){
+  :root{ --card-w:88px; --card-h:128px }
+  header{padding:8px}
+  #box{max-width:94%}
+}
 </style>
 </head>
 <body>
@@ -140,7 +124,6 @@
 <audio id="bgmusic" loop preload="none"><source src="music.mp3" type="audio/mpeg"></audio>
 
 <script>
-/* DATA */
 const namesIT = [
 "Il Matto / Masaniello","Il Mago / Virgilio","La Papessa / Sibilla Cumana",
 "L’Imperatrice / Maria Carolina","L’Imperatore / Federico II","Il Papa / San Gennaro",
@@ -160,15 +143,53 @@ const namesEN = [
 ];
 
 const descIT = [
-"Il Matto / Masaniello — La carta del Matto rappresenta la spontaneità, l’ingenuità e la libertà...",
-"Il Mago / Virgilio — La carta del Mago rappresenta l’abilità e il potere creativo...",
-"…", // Inserisci tutte le descrizioni complete
+"Il Matto / Masaniello — La carta del Matto rappresenta la spontaneità, l’ingenuità e la libertà. È una figura che agisce senza pregiudizi, spesso in modo impulsivo e senza calcolare i rischi. Il Matto è fuori dagli schemi, viaggia senza meta, fiducioso nel suo istinto, ma vulnerabile ai pericoli della strada e pronto a farsi travolgere dal suo stesso caos interiore.",
+"Il Mago / Virgilio — La carta del Mago rappresenta l’abilità, il potere creativo e la padronanza degli strumenti necessari per trasformare la realtà. Il Mago è colui che sa agire con intelligenza, sfruttando le risorse a sua disposizione per raggiungere i propri obiettivi.",
+"La Papessa / Sibilla Cumana — La carta della Papessa rappresenta la saggezza occulta, l’intuizione e la conoscenza spirituale nascosta...",
+"L’Imperatrice / Maria Carolina — La carta dell’Imperatrice rappresenta la fertilità, l’abbondanza e il potere creativo...",
+"L’Imperatore / Federico II — La carta dell’Imperatore rappresenta l’autorità e il potere terreno...",
+"Il Papa / San Gennaro — La carta del Papa rappresenta l’autorità spirituale, la saggezza, la guida morale e la mediazione tra il divino e l’umano.",
+"Gli Amanti / Sebeto e Megara — La carta degli Amanti rappresenta l’amore, l’unione e la scelta...",
+"Il Carro / Maradona — La carta del Carro rappresenta vittoria, determinazione e controllo...",
+"La Forza / Femminiello — La carta della Forza rappresenta il coraggio, la determinazione e la capacità di domare le proprie emozioni e istinti...",
+"L’Eremita / Munaciello — La carta dell’Eremita rappresenta la ricerca interiore, la solitudine volontaria...",
+"La Ruota della Fortuna / Ruota degli Esposti — La carta della Ruota della Fortuna rappresenta il ciclo della vita, il cambiamento e l’imprevedibilità del destino...",
+"La Giustizia / Maddalena Cerasuolo — La carta della Giustizia rappresenta equilibrio, verità e imparzialità...",
+"L’Appeso / Maria la Rossa — La carta dell’Appeso nei tarocchi rappresenta una sospensione temporanea...",
+"La Morte / Anime Pezzentelle — La carta della Morte simboleggia trasformazione, cambiamento radicale e fine di un ciclo...",
+"La Temperanza / Partenope — La carta della Temperanza rappresenta armonia, moderazione e equilibrio...",
+"Il Diavolo / Mammone — La carta del Diavolo rappresenta tentazione, schiavitù, desideri materiali o comportamenti nocivi...",
+"La Torre / Maschio Angioino — La carta della Torre rappresenta distruzione improvvisa, crisi e cambiamenti drammatici...",
+"La Stella / Bella ’Mbriana — La carta della Stella rappresenta speranza, guida spirituale e rinnovamento...",
+"La Luna / Janare — La carta della Luna rappresenta l’inconscio, l’intuizione e i misteri nascosti...",
+"Il Sole / Pulcinella — La carta del Sole rappresenta gioia, vitalità e successo...",
+"Il Giudizio / Vesuvio — La carta del Giudizio rappresenta la resa dei conti e la rinascita...",
+"Il Mondo / Artisti Napoletani — La carta del Mondo rappresenta il completamento, l’armonia e il successo totale..."
 ];
 
 const descEN = [
-"The Fool / Masaniello — The Fool stands for spontaneity and freedom...",
-"The Magician / Virgilio — The Magician symbolizes skill and creative power...",
-"…", // Inserisci tutte le descrizioni complete
+"The Fool / Masaniello — The Fool stands for spontaneity, naivety and freedom...",
+"The Magician / Virgilio — The Magician symbolizes skill, creative power and mastery of tools...",
+"The High Priestess / Sibilla Cumana — The High Priestess represents hidden wisdom and intuition...",
+"The Empress / Maria Carolina — The Empress stands for fertility, abundance and nurturing power...",
+"The Emperor / Federico II — The Emperor symbolizes authority and stable leadership...",
+"The Hierophant / San Gennaro — The Hierophant represents spiritual authority and guidance...",
+"The Lovers / Sebeto e Megara — The Lovers represent love, union and important choices...",
+"The Chariot / Maradona — The Chariot symbolizes victory, determination and control...",
+"Strength / Femminiello — Strength represents courage and inner mastery...",
+"The Hermit / Munaciello — The Hermit symbolizes introspection and wisdom...",
+"Wheel of Fortune / Ruota degli Esposti — The Wheel symbolizes life's cycles and change...",
+"Justice / Maddalena Cerasuolo — Justice represents fairness and truth...",
+"The Hanged Man / Maria la Rossa — The Hanged Man stands for suspension and new perspective...",
+"Death / Anime Pezzentelle — Death symbolizes transformation and the end of a cycle...",
+"Temperance / Partenope — Temperance represents balance and harmony...",
+"The Devil / Mammone — The Devil symbolizes temptation and inner shadows...",
+"The Tower / Maschio Angioino — The Tower stands for sudden change and rebuilding...",
+"The Star / Bella ’Mbriana — The Star represents hope and inspiration...",
+"The Moon / Janare — The Moon stands for intuition and hidden mysteries...",
+"The Sun / Pulcinella — The Sun symbolizes joy, vitality and success...",
+"Judgement / Vesuvio — Judgement symbolizes rebirth and reckoning...",
+"The World / Artisti Napoletani — The World stands for completion and fulfillment..."
 ];
 
 /* ELEMENTS & STATE */
@@ -202,7 +223,6 @@ function createClosedDeck(){
   cards=[];
   opened=false;
   titleMain.innerText = (lang==='it') ? 'Clicca il mazzo per aprire' : 'Tap the deck to open';
-
   for(let i=0;i<6;i++){
     const el = document.createElement('div');
     el.className = 'card stack-card stack-pulse';
@@ -226,14 +246,12 @@ function createClosedDeck(){
 function openDeck(){
   if(opened) return;
   opened = true;
-
   const shaker = document.createElement('div');
   shaker.style.position='absolute';
   shaker.style.left='50%'; shaker.style.top='50%';
   shaker.style.width='0'; shaker.style.height='0';
   shaker.className='shake';
   deckEl.appendChild(shaker);
-
   setTimeout(()=> {
     if(shaker.parentNode) shaker.parentNode.removeChild(shaker);
     spawnDeck();
@@ -283,14 +301,15 @@ function fanOpen(){
     const t = i/(n-1);
     const eased = t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
     const angleDeg = leftAngleDeg + eased*totalAngle;
-    const angleRad = angleDeg * Math.PI / 180;
+    const angleRad = angleDeg*Math.PI/180;
     const px = pivotX + radius*Math.sin(angleRad);
     const py = pivotY - radius*Math.cos(angleRad);
-    const centerOffset = Math.cos((t-0.5)*Math.PI)*6;
-    const finalX = px - cw/2;
-    const finalY = py - ch/2 + centerOffset;
-    const scale = 1 + 0.18*Math.cos((t-0.5)*Math.PI);
-    positions.push({x:finalX, y:finalY, angle:angleDeg, scale});
+    positions[i] = {
+      x:px - cw/2,
+      y:py - ch/2,
+      angle:angleDeg,
+      scale:1 + 0.18*Math.cos((t-0.5)*Math.PI)
+    };
   }
 
   order.forEach((i,seq)=>{
@@ -298,13 +317,13 @@ function fanOpen(){
     const delay = seq*40 + Math.random()*30;
     setTimeout(()=>{
       const c = cards[i];
-      c.style.left = pos.x+'px';
-      c.style.top = pos.y+'px';
+      c.style.left = pos.x + 'px';
+      c.style.top = pos.y + 'px';
       c.style.opacity = 1;
       c.style.transform = `rotate(${pos.angle}deg) scale(${pos.scale})`;
       if(Math.abs(i-mid)<3) c.classList.add('glow');
       c.style.zIndex = 3000 - Math.round(Math.abs(i-mid));
-    }, delay);
+    },delay);
   });
 }
 
@@ -315,52 +334,55 @@ function onCardClick(card){
   cards.forEach(c=>{
     if(c!==card){
       c.style.transition = 'transform .35s ease, opacity .35s';
-      c.style.opacity=0;
-      try{c.style.transform=c.style.transform+' scale(0.6)';}catch(e){}
+      c.style.opacity = 0;
+      try{ c.style.transform = c.style.transform + ' scale(0.6)'; }catch(e){}
     } else {
       const slug = slugFromName(namesIT[idx]);
-      c.style.transition='transform .48s cubic-bezier(.2,.9,.3,1)';
-      c.style.transform=c.style.transform+' rotateY(180deg) scale(1.02)';
-      setTimeout(()=>{c.style.backgroundImage=`url("img/${idx}_${slug}.jpg")`},240);
+      c.style.transition = 'transform .48s cubic-bezier(.2,.9,.3,1)';
+      c.style.transform = c.style.transform + ' rotateY(180deg) scale(1.02)';
+      setTimeout(()=> {
+        c.style.backgroundImage = `url("img/${idx}_${slug}.jpg")`;
+      },240);
     }
   });
 
-  setTimeout(()=>openOverlay(idx),520);
+  setTimeout(()=> openOverlay(idx),520);
 }
 
 function openOverlay(i){
   overlay.classList.add('show');
-  titleEl.innerText = (lang==='it')?namesIT[i]:namesEN[i];
-  descEl.innerText  = (lang==='it')?descIT[i]:descEN[i];
+  titleEl.innerText = (lang==='it') ? namesIT[i] : namesEN[i];
+  descEl.innerText  = (lang==='it') ? descIT[i] : descEN[i];
   const slug = slugFromName(namesIT[i]);
   imgBig.src = `img/${i}_${slug}.jpg`;
-  imgBig.alt = (lang==='it')?namesIT[i]:namesEN[i];
+  imgBig.alt = (lang==='it') ? namesIT[i] : namesEN[i];
 }
-
 function closeCard(){ overlay.classList.remove('show'); }
-function restart(){ closeCard(); setTimeout(()=>createClosedDeck(),300); }
+function restart(){ closeCard(); setTimeout(()=> createClosedDeck(),300); }
 
 musicBtn.addEventListener('click', ()=>{
   if(bg.paused){ bg.play().catch(()=>{}); musicBtn.innerText='⏸ Pause'; }
-  else{ bg.pause(); musicBtn.innerText='🎵 Play'; }
+  else { bg.pause(); musicBtn.innerText='🎵 Play'; }
 });
 
-langIt.addEventListener('click',()=>setLang('it'));
-langEn.addEventListener('click',()=>setLang('en'));
+langIt.addEventListener('click', ()=> setLang('it'));
+langEn.addEventListener('click', ()=> setLang('en'));
 function setLang(l){
   lang=l;
-  titleMain.innerText=(lang==='it')?'Clicca il mazzo per aprire':'Tap the deck to open';
+  titleMain.innerText = (lang==='it')?'Clicca il mazzo per aprire':'Tap the deck to open';
   if(overlay.classList.contains('show')){
-    const src=imgBig.src||'';
-    const m=src.match(/\/(\d+)_/);
-    if(m){ const i=parseInt(m[1],10); titleEl.innerText=(lang==='it')?namesIT[i]:namesEN[i]; descEl.innerText=(lang==='it')?descIT[i]:descEN[i]; }
+    const src = imgBig.src||'';
+    const m = src.match(/\/(\d+)_/);
+    if(m){ const i=parseInt(m[1],10); titleEl.innerText = (lang==='it')?namesIT[i]:namesEN[i]; descEl.innerText = (lang==='it')?descIT[i]:descEN[i]; }
   }
 }
 
 createClosedDeck();
-restartBtn.addEventListener('click', (e)=>{e.stopPropagation();restart();});
-overlay.addEventListener('click', (e)=>{if(e.target===overlay) closeCard();});
-window.addEventListener('resize', ()=>{ if(opened && cards.length){ fanOpen(); }});
+restartBtn.addEventListener('click',(e)=>{e.stopPropagation(); restart();});
+overlay.addEventListener('click',(e)=>{if(e.target===overlay) closeCard();});
+window.addEventListener('resize',()=>{
+  if(opened && cards.length){ fanOpen(); }
+});
 </script>
 </body>
 </html>
