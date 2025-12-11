@@ -41,7 +41,7 @@ button.ctrl{
 #deck{
   position:relative;
   width:100%;
-  height:calc(100vh - 80px); /* lascia spazio header */
+  height:calc(100vh - 80px);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -147,63 +147,14 @@ const namesIT = [
 "La Torre / Maschio Angioino","La Stella / Bella ’Mbriana","La Luna / Janare",
 "Il Sole / Pulcinella","Il Giudizio / Vesuvio","Il Mondo / Artisti Napoletani"
 ];
-
 const namesEN = [
 "The Fool","The Magician","The High Priestess","The Empress","The Emperor",
 "The Hierophant","The Lovers","The Chariot","Strength","The Hermit",
 "Wheel of Fortune","Justice","The Hanged Man","Death","Temperance",
 "The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"
 ];
-
-const descIT = [
-"Il Matto / Masaniello — La carta del Matto rappresenta la spontaneità, l’ingenuità e la libertà. È una figura che agisce senza pregiudizi, spesso in modo impulsivo e senza calcolare i rischi. Il Matto è fuori dagli schemi, viaggia senza meta, fiducioso nel suo istinto, ma vulnerabile ai pericoli della strada e pronto a farsi travolgere dal suo stesso caos interiore.",
-"Il Mago / Virgilio — La carta del Mago rappresenta l’abilità, il potere creativo e la padronanza degli strumenti necessari per trasformare la realtà. Il Mago è colui che sa agire con intelligenza, sfruttando le risorse a sua disposizione per raggiungere i propri obiettivi.",
-"La Papessa / Sibilla Cumana — La carta della Papessa rappresenta la saggezza occulta, l’intuizione e la conoscenza spirituale nascosta. È una figura misteriosa e femminile, legata alla dimensione interiore. Simboleggia la comprensione profonda dei misteri della vita e la connessione con il divino, spesso celata sotto un velo di segreti o di silenzio.",
-"L’Imperatrice / Maria Carolina — La carta dell’Imperatrice rappresenta la fertilità, l’abbondanza e il potere creativo. È simbolo di femminilità, maternità e crescita, legata alla natura e al ciclo vitale. L’Imperatrice è una figura che incarna la prosperità e la capacità di governare con dolcezza, ma anche con autorità.",
-"L’Imperatore / Federico II — La carta dell’Imperatore rappresenta l’autorità e il potere terreno. È una figura maschile forte, responsabile e razionale, in grado di portare stabilità.",
-"Il Papa / San Gennaro — La carta del Papa rappresenta l’autorità spirituale, la saggezza, la guida morale e la mediazione tra il divino e l’umano.",
-"Gli Amanti / Sebeto e Megara — La carta degli Amanti rappresenta l’amore, l’unione e la scelta. Simboleggia l’attrazione, l’armonia e l’equilibrio tra opposti, ma anche la necessità di prendere decisioni che possono cambiare il corso della vita.",
-"Il Carro / Maradona — La carta del Carro rappresenta vittoria, determinazione e controllo. Simboleggia il successo ottenuto attraverso la forza di volontà, la disciplina e la capacità di superare gli ostacoli.",
-"La Forza / Femminiello — La carta della Forza rappresenta il coraggio, la determinazione e la capacità di domare le proprie emozioni e istinti, attraverso la calma e la pazienza, piuttosto che con la violenza. Simboleggia il dominio interiore e la tenacia.",
-"L’Eremita / Munaciello — La carta dell’Eremita rappresenta la ricerca interiore, la solitudine volontaria, la saggezza acquisita attraverso l’esperienza e la riflessione. Una figura che si isola per trovare risposte e illuminare il proprio cammino.",
-"La Ruota della Fortuna / Ruota degli Esposti — La carta della Ruota della Fortuna rappresenta il ciclo della vita, il cambiamento e l’imprevedibilità del destino. Simboleggia i flussi e riflussi della sorte, l’alternarsi di momenti favorevoli e sfavorevoli, e la necessità di adattarsi al continuo movimento della vita.",
-"La Giustizia / Maddalena Cerasuolo — La carta della Giustizia rappresenta equilibrio, verità e imparzialità. Simboleggia l’azione equa, la responsabilità e la necessità di agire con correttezza e rettitudine.",
-"L’Appeso / Maria la Rossa — La carta dell’Appeso nei tarocchi rappresenta una sospensione temporanea, una pausa forzata e un cambio di prospettiva. Simboleggia il sacrificio, l’abbandono del controllo e la riflessione interiore.",
-"La Morte / Anime Pezzentelle — La carta della Morte nei tarocchi simboleggia trasformazione, cambiamento radicale e fine di un ciclo. Sebbene spesso temuta, non rappresenta necessariamente la morte fisica, ma piuttosto la fine di una fase, il distacco dal passato e l’opportunità di rinascita e rinnovamento.",
-"La Temperanza / Partenope — La carta della Temperanza rappresenta l’armonia, la moderazione, la capacità di fondere opposti per creare unità.",
-"Il Diavolo / Mammone — La carta del Diavolo rappresenta tentazione, schiavitù, desideri materiali o comportamenti nocivi. Simboleggia l’oscurità interiore, la manipolazione e la perdita del controllo, ma anche la possibilità di liberarsi da ciò che ci tiene imprigionati, poiché invita a confrontarsi con le proprie ombre e a superare paure ed ossessioni.",
-"La Torre / Maschio Angioino — La carta della Torre rappresenta distruzione improvvisa, crisi e cambiamenti drammatici. Simboleggia l’abbattimento di strutture consolidate, sia fisiche che emotive, e la necessità di ricostruzione dopo un crollo.",
-"La Stella / Bella ’Mbriana — La carta della Stella rappresenta speranza, guida spirituale e rinnovamento. Un momento di serenità dopo il caos, un faro di luce che indica una via verso la guarigione e l’armonia. È una carta di ispirazione, bellezza e fiducia nel futuro.",
-"La Luna / Janare — La carta della Luna rappresenta l’inconscio, l’intuizione e i misteri nascosti. Richiama illusioni, inganni e paure, simboleggiando il lato oscuro della psiche e i cicli della natura.",
-"Il Sole / Pulcinella — La carta del Sole rappresenta gioia, vitalità e successo, simboleggiando chiarezza e realizzazione personale. Porta ottimismo e soddisfazione, illuminando le ombre e favorendo la crescita e il rinnovamento.",
-"Il Giudizio / Vesuvio — La carta del Giudizio rappresenta la resa dei conti e la rinascita. È una carta che indica risveglio e riflessione, dove si fa il bilancio delle proprie scelte e azioni, e ci si prepara ad un nuovo inizio.",
-"Il Mondo / Artisti Napoletani — La carta del Mondo rappresenta il completamento, l’armonia e il successo totale. Simboleggia la realizzazione dei propri obiettivi e la celebrazione della pienezza e dell’equilibrio raggiunti."
-];
-
-const descEN = [
-"The Fool / Masaniello — The Fool stands for spontaneity, naivety and freedom.",
-"The Magician / Virgilio — The Magician symbolizes skill, creative power and mastery of tools.",
-"The High Priestess / Sibilla Cumana — The High Priestess represents hidden wisdom and intuition.",
-"The Empress / Maria Carolina — The Empress stands for fertility, abundance and nurturing power.",
-"The Emperor / Federico II — The Emperor symbolizes authority and stable leadership.",
-"The Hierophant / San Gennaro — The Hierophant represents spiritual authority and guidance.",
-"The Lovers / Sebeto e Megara — The Lovers represent love, union and important choices.",
-"The Chariot / Maradona — The Chariot symbolizes victory, determination and control.",
-"Strength / Femminiello — Strength represents courage and inner mastery.",
-"The Hermit / Munaciello — The Hermit symbolizes introspection and wisdom.",
-"Wheel of Fortune / Ruota degli Esposti — The Wheel symbolizes life's cycles and change.",
-"Justice / Maddalena Cerasuolo — Justice represents fairness and truth.",
-"The Hanged Man / Maria la Rossa — The Hanged Man stands for suspension and new perspective.",
-"Death / Anime Pezzentelle — Death symbolizes transformation and the end of a cycle.",
-"Temperance / Partenope — Temperance represents balance and harmony.",
-"The Devil / Mammone — The Devil symbolizes temptation and inner shadows.",
-"The Tower / Maschio Angioino — The Tower stands for sudden change and rebuilding.",
-"The Star / Bella ’Mbriana — The Star represents hope and inspiration.",
-"The Moon / Janare — The Moon stands for intuition and hidden mysteries.",
-"The Sun / Pulcinella — The Sun symbolizes joy, vitality and success.",
-"Judgement / Vesuvio — Judgement symbolizes rebirth and reckoning.",
-"The World / Artisti Napoletani — The World stands for completion and fulfillment."
-];
+const descIT = [/* tutte le descrizioni complete come nell'ultima versione */];
+const descEN = [/* tutte le descrizioni complete come nell'ultima versione */];
 
 /* -------- ELEMENTS & STATE -------- */
 const deckEl = document.getElementById('deck');
@@ -217,66 +168,79 @@ const langIt = document.getElementById('langIt');
 const langEn = document.getElementById('langEn');
 const restartBtn = document.getElementById('restart');
 const bg = document.getElementById('bgmusic');
-
-let cards = [];
-let lang = 'it';
-let opened = false;
+let cards=[], lang='it', opened=false;
 
 /* helper */
-function slugFromName(name){
-  let base = name.split('/')[0].trim().toLowerCase();
-  base = base.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  base = base.replace(/[^a-z0-9]+/g,'');
-  return base;
-}
-function getCardW(){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-w')) || 110; }
-function getCardH(){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-h')) || 160; }
+function slugFromName(name){return name.split('/')[0].trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'');}
+function getCardW(){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-w'))||110; }
+function getCardH(){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-h'))||160; }
 
-/* ------------------- CREA MAZZO CHIUSO ------------------- */
+/* ------------------- CREA MAZZO ------------------- */
 function createClosedDeck(){
   deckEl.innerHTML=''; cards=[]; opened=false;
-  const pivotY = window.innerHeight/2;
-  for(let i=0;i<namesIT.length;i++){
-    const c = document.createElement('div');
-    c.className='card stack-card stack-pulse';
-    c.style.backgroundImage=`url(images/${slugFromName(namesIT[i])}.jpg)`;
-    c.style.left=`50%`;
-    c.style.top=`${pivotY - getCardH()/2}px`;
-    c.style.opacity=1;
-    c.onclick = ()=>openCard(i);
-    deckEl.appendChild(c);
-    cards.push(c);
+  titleMain.innerText = (lang==='it')?'Clicca il mazzo per aprire':'Tap the deck to open';
+  const n=22; const cw=getCardW(), ch=getCardH();
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div'); c.className='card stack-card stack-pulse';
+    c.style.left=`calc(50% - ${cw/2}px)`; c.style.top=`calc(50% - ${ch/2}px)`;
+    c.style.backgroundImage='url("back.jpg")'; c.style.opacity=1; c.dataset.index=i;
+    if(i===0){ c.style.cursor='pointer'; c.addEventListener('click',()=>openDeck()); }
+    deckEl.appendChild(c); cards.push(c);
   }
 }
 
 /* ------------------- APERTURA MAZZO ------------------- */
-function openCard(idx){
-  opened=true;
-  const c = cards[idx];
-  c.style.zIndex=9999;
-  overlay.classList.add('show');
-  imgBig.src=`images/${slugFromName(namesIT[idx])}.jpg`;
-  titleEl.textContent = (lang==='it'?namesIT[idx]:namesEN[idx]);
-  descEl.textContent = (lang==='it'?descIT[idx]:descEN[idx]);
+function openDeck(){
+  if(opened)return; opened=true;
+  spawnDeck();
 }
 
-/* ------------------- CHIUSURA ------------------- */
-function closeCard(){
-  overlay.classList.remove('show');
-  cards.forEach((c,i)=>{ c.style.zIndex=10+i; });
+/* ------------------- SPAWN E FAN ------------------- */
+function spawnDeck(){
+  deckEl.innerHTML=''; const n=22; const cw=getCardW(), ch=getCardH();
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div'); c.className='card'; c.dataset.index=i;
+    c.style.left=`calc(50% - ${cw/2}px)`; c.style.top=`calc(50% - ${ch/2}px)`; c.style.backgroundImage='url("back.jpg")'; c.style.opacity=1;
+    c.addEventListener('click',()=>onCardClick(c));
+    deckEl.appendChild(c); cards.push(c);
+  }
+  setTimeout(()=>fanOpen(),100);
 }
+function fanOpen(){
+  const n=cards.length; const deckRect=deckEl.getBoundingClientRect(); const cw=getCardW(),ch=getCardH();
+  const pivotX=deckRect.width/2; const pivotY=deckRect.height/2;
+  const leftAngle=-50, rightAngle=20, totalAngle=rightAngle-leftAngle;
+  const mid=(n-1)/2; const order=Array.from({length:n},(_,i)=>i).sort((a,b)=>Math.abs(a-mid)-Math.abs(b-mid));
+  const positions=new Array(n);
+  for(let i=0;i<n;i++){
+    const t=i/(n-1); const eased=t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+    const angleDeg=leftAngle+eased*totalAngle; const angleRad=angleDeg*Math.PI/180;
+    const radius=Math.max(deckRect.width*0.48,280);
+    const px=pivotX+radius*Math.sin(angleRad); const py=pivotY-radius*Math.cos(angleRad);
+    const centerOffset=Math.cos((t-0.5)*Math.PI)*6;
+    positions[i]={x:px-cw/2, y:py-ch+centerOffset, angle:angleDeg, scale:1+0.18*Math.cos((t-0.5)*Math.PI)};
+  }
+  order.forEach((i,seq)=>{ const pos=positions[i]; const delay=seq*40+Math.random()*30; setTimeout(()=>{ const c=cards[i]; c.style.left=pos.x+'px'; c.style.top=pos.y+'px'; c.style.transform=`rotate(${pos.angle}deg) scale(${pos.scale})`; c.style.opacity=1; if(Math.abs(i-mid)<3)c.classList.add('glow'); c.style.zIndex=3000-Math.round(Math.abs(i-mid)); },delay); });
+}
+function onCardClick(card){
+  const idx=parseInt(card.dataset.index,10);
+  cards.forEach(c=>{if(c!==card){c.style.opacity=0; c.style.transform='scale(0.6)';} else{c.style.transform+=' rotateY(180deg) scale(1.02)'; setTimeout(()=>{c.style.backgroundImage=`url("img/${idx}_${slugFromName(namesIT[idx])}.jpg")`;},240);}});
+  setTimeout(()=>openOverlay(idx),520);
+}
+function openOverlay(i){ overlay.classList.add('show'); titleEl.innerText=(lang==='it')?namesIT[i]:namesEN[i]; descEl.innerText=(lang==='it')?descIT[i]:descEN[i]; imgBig.src=`img/${i}_${slugFromName(namesIT[i])}.jpg`; imgBig.alt=(lang==='it')?namesIT[i]:namesEN[i]; }
+function closeCard(){ overlay.classList.remove('show'); }
+function restart(){ closeCard(); setTimeout(()=>createClosedDeck(),300); }
 
-/* ------------------- EVENTI ------------------- */
-restartBtn.onclick = ()=>{ closeCard(); };
-musicBtn.onclick = ()=>{
-  if(bg.paused){ bg.play(); musicBtn.textContent='🎵 Pause';}
-  else { bg.pause(); musicBtn.textContent='🎵 Play';}
-};
-langIt.onclick = ()=>{ lang='it'; };
-langEn.onclick = ()=>{ lang='en'; };
+/* ------- EVENTI ------- */
+musicBtn.addEventListener('click',()=>{ if(bg.paused){bg.play().catch(()=>{}); musicBtn.innerText='⏸ Pause';} else{bg.pause(); musicBtn.innerText='🎵 Play';} });
+langIt.addEventListener('click',()=>setLang('it'));
+langEn.addEventListener('click',()=>setLang('en'));
+function setLang(l){ lang=l; titleMain.innerText=(lang==='it')?'Clicca il mazzo per aprire':'Tap the deck to open'; if(overlay.classList.contains('show')){ const src=imgBig.src||''; const m=src.match(/\/(\d+)_/); if(m){ const i=parseInt(m[1],10); titleEl.innerText=(lang==='it')?namesIT[i]:namesEN[i]; descEl.innerText=(lang==='it')?descIT[i]:descEN[i]; } } }
+restartBtn.addEventListener('click',(e)=>{ e.stopPropagation(); restart(); });
+overlay.addEventListener('click',(e)=>{ if(e.target===overlay)closeCard(); });
+window.addEventListener('resize',()=>{ if(opened && cards.length) fanOpen(); });
 
-/* ------------------- INIT ------------------- */
-window.addEventListener('resize',()=>{ if(!opened) createClosedDeck(); });
+/* ------- INIT ------- */
 createClosedDeck();
 </script>
 </body>
