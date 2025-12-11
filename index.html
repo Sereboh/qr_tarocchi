@@ -9,7 +9,6 @@
     --fg:#f4e7c2;
     --bg1:#130f22;
     --bg2:#000;
-    --gold: rgba(212,175,55,0.95);
     --card-w:110px;
     --card-h:160px;
   }
@@ -40,8 +39,7 @@
   #deck{
     position:relative;
     width:100%;
-    height:64vh;
-    min-height:360px;
+    height:100vh;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -66,17 +64,6 @@
     overflow:hidden;
   }
 
-  .card::after{
-    content:"";
-    position:absolute;inset:0;border-radius:10px;
-    pointer-events:none;
-    box-shadow: inset 0 0 0 0 rgba(212,175,55,0);
-    transition: box-shadow .3s ease, filter .25s;
-  }
-  .card.open-style::after{
-    box-shadow: inset 0 0 0 2px var(--gold);
-    filter: drop-shadow(0 8px 22px rgba(0,0,0,0.6));
-  }
   .card.glow{ filter: drop-shadow(0 0 14px rgba(147,116,201,0.32)); }
 
   .card:hover{
@@ -172,8 +159,17 @@ const namesEN = [
 "The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"
 ];
 
-const descIT = [ /* descrizioni complete */ ];
-const descEN = [ /* descrizioni complete */ ];
+const descIT = [
+"Il Matto / Masaniello — La carta del Matto rappresenta la spontaneità, l’ingenuità e la libertà...",
+"Il Mago / Virgilio — La carta del Mago rappresenta l’abilità e il potere creativo...",
+"…", // Inserisci tutte le descrizioni complete
+];
+
+const descEN = [
+"The Fool / Masaniello — The Fool stands for spontaneity and freedom...",
+"The Magician / Virgilio — The Magician symbolizes skill and creative power...",
+"…", // Inserisci tutte le descrizioni complete
+];
 
 /* ELEMENTS & STATE */
 const deckEl = document.getElementById('deck');
@@ -192,7 +188,6 @@ let cards = [];
 let lang = 'it';
 let opened = false;
 
-/* helper */
 function slugFromName(name){
   let base = name.split('/')[0].trim().toLowerCase();
   base = base.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -202,7 +197,6 @@ function slugFromName(name){
 function getCardW(){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-w')) || 110; }
 function getCardH(){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-h')) || 160; }
 
-/* CREATE CLOSED STACK */
 function createClosedDeck(){
   deckEl.innerHTML='';
   cards=[];
@@ -229,7 +223,6 @@ function createClosedDeck(){
   }
 }
 
-/* OPEN DECK: shake then spawn full deck */
 function openDeck(){
   if(opened) return;
   opened = true;
@@ -247,7 +240,6 @@ function openDeck(){
   },420);
 }
 
-/* Spawn full deck centered, then fan */
 function spawnDeck(){
   deckEl.innerHTML='';
   cards=[];
@@ -270,122 +262,105 @@ function spawnDeck(){
   setTimeout(()=> fanOpen(), 90);
 }
 
-/* FAN algorithm: centered on viewport */
+/* FAN centrato perfettamente */
 function fanOpen(){
   const n = cards.length;
   const cw = getCardW(), ch = getCardH();
   const pivotX = window.innerWidth / 2;
-  const pivotY = window.innerHeight / 2 + 40;
+  const pivotY = window.innerHeight / 2;
 
   const leftAngleDeg = -52;
   const rightAngleDeg = 20;
   const totalAngle = rightAngleDeg - leftAngleDeg;
 
   const mid = (n-1)/2;
-  const order = Array.from({length:n}, (_,i)=>i).sort((a,b)=>{
-    return Math.abs(a-mid) - Math.abs(b-mid);
-  });
+  const order = Array.from({length:n}, (_,i)=>i).sort((a,b)=>Math.abs(a-mid)-Math.abs(b-mid));
 
   const radius = Math.max(window.innerWidth * 0.48, 280);
+  const positions = [];
 
-  const positions = new Array(n);
   for(let i=0;i<n;i++){
-    const t = i / (n - 1);
+    const t = i/(n-1);
     const eased = t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-    const angleDeg = leftAngleDeg + eased * totalAngle;
+    const angleDeg = leftAngleDeg + eased*totalAngle;
     const angleRad = angleDeg * Math.PI / 180;
-    const px = pivotX + radius * Math.sin(angleRad);
-    const py = pivotY - radius * Math.cos(angleRad);
-    const centerOffset = Math.cos((t - 0.5) * Math.PI) * 6;
+    const px = pivotX + radius*Math.sin(angleRad);
+    const py = pivotY - radius*Math.cos(angleRad);
+    const centerOffset = Math.cos((t-0.5)*Math.PI)*6;
     const finalX = px - cw/2;
     const finalY = py - ch/2 + centerOffset;
-    const scale = 1 + 0.18 * Math.cos((t - 0.5) * Math.PI);
-    positions[i] = {x: finalX, y: finalY, angle: angleDeg, scale};
+    const scale = 1 + 0.18*Math.cos((t-0.5)*Math.PI);
+    positions.push({x:finalX, y:finalY, angle:angleDeg, scale});
   }
 
-  order.forEach((i, seq) => {
+  order.forEach((i,seq)=>{
     const pos = positions[i];
-    const delay = seq * 40 + Math.random()*30;
-    setTimeout(()=> {
+    const delay = seq*40 + Math.random()*30;
+    setTimeout(()=>{
       const c = cards[i];
-      c.style.left = pos.x + 'px';
-      c.style.top  = pos.y + 'px';
+      c.style.left = pos.x+'px';
+      c.style.top = pos.y+'px';
       c.style.opacity = 1;
       c.style.transform = `rotate(${pos.angle}deg) scale(${pos.scale})`;
-      c.classList.add('open-style');
-      if(Math.abs(i-mid) < 3) c.classList.add('glow');
+      if(Math.abs(i-mid)<3) c.classList.add('glow');
       c.style.zIndex = 3000 - Math.round(Math.abs(i-mid));
     }, delay);
   });
 }
 
-/* on card click */
 function onCardClick(card){
   if(!opened) return;
   const idx = parseInt(card.dataset.index,10);
 
   cards.forEach(c=>{
-    if(c !== card){
+    if(c!==card){
       c.style.transition = 'transform .35s ease, opacity .35s';
-      c.style.opacity = 0;
-      try{ c.style.transform = c.style.transform + ' scale(0.6)'; }catch(e){}
+      c.style.opacity=0;
+      try{c.style.transform=c.style.transform+' scale(0.6)';}catch(e){}
     } else {
       const slug = slugFromName(namesIT[idx]);
-      c.style.transition = 'transform .48s cubic-bezier(.2,.9,.3,1)';
-      c.style.transform = c.style.transform + ' rotateY(180deg) scale(1.02)';
-      setTimeout(()=> {
-        c.style.backgroundImage = `url("img/${idx}_${slug}.jpg")`;
-      }, 240);
+      c.style.transition='transform .48s cubic-bezier(.2,.9,.3,1)';
+      c.style.transform=c.style.transform+' rotateY(180deg) scale(1.02)';
+      setTimeout(()=>{c.style.backgroundImage=`url("img/${idx}_${slug}.jpg")`},240);
     }
   });
 
-  setTimeout(()=> openOverlay(idx), 520);
+  setTimeout(()=>openOverlay(idx),520);
 }
 
-/* overlay open/close/restart */
 function openOverlay(i){
   overlay.classList.add('show');
-  titleEl.innerText = (lang==='it') ? namesIT[i] : namesEN[i];
-  descEl.innerText  = (lang==='it') ? descIT[i] : descEN[i];
+  titleEl.innerText = (lang==='it')?namesIT[i]:namesEN[i];
+  descEl.innerText  = (lang==='it')?descIT[i]:descEN[i];
   const slug = slugFromName(namesIT[i]);
   imgBig.src = `img/${i}_${slug}.jpg`;
-  imgBig.alt = (lang==='it') ? namesIT[i] : namesEN[i];
-}
-function closeCard(){ overlay.classList.remove('show'); }
-function restart(){
-  closeCard();
-  setTimeout(()=> createClosedDeck(), 300);
+  imgBig.alt = (lang==='it')?namesIT[i]:namesEN[i];
 }
 
-/* music */
+function closeCard(){ overlay.classList.remove('show'); }
+function restart(){ closeCard(); setTimeout(()=>createClosedDeck(),300); }
+
 musicBtn.addEventListener('click', ()=>{
   if(bg.paused){ bg.play().catch(()=>{}); musicBtn.innerText='⏸ Pause'; }
-  else { bg.pause(); musicBtn.innerText='🎵 Play'; }
+  else{ bg.pause(); musicBtn.innerText='🎵 Play'; }
 });
 
-/* language */
-langIt.addEventListener('click', ()=> setLang('it'));
-langEn.addEventListener('click', ()=> setLang('en'));
+langIt.addEventListener('click',()=>setLang('it'));
+langEn.addEventListener('click',()=>setLang('en'));
 function setLang(l){
-  lang = l;
-  titleMain.innerText = (lang==='it') ? 'Clicca il mazzo per aprire' : 'Tap the deck to open';
+  lang=l;
+  titleMain.innerText=(lang==='it')?'Clicca il mazzo per aprire':'Tap the deck to open';
   if(overlay.classList.contains('show')){
-    const src = imgBig.src || '';
-    const m = src.match(/\/(\d+)_/);
-    if(m){ const i = parseInt(m[1],10); titleEl.innerText = (lang==='it') ? namesIT[i] : namesEN[i]; descEl.innerText = (lang==='it') ? descIT[i] : descEN[i]; }
+    const src=imgBig.src||'';
+    const m=src.match(/\/(\d+)_/);
+    if(m){ const i=parseInt(m[1],10); titleEl.innerText=(lang==='it')?namesIT[i]:namesEN[i]; descEl.innerText=(lang==='it')?descIT[i]:descEN[i]; }
   }
 }
 
-/* init */
 createClosedDeck();
-restartBtn.addEventListener('click', (e)=>{ e.stopPropagation(); restart(); });
-overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeCard(); });
-
-window.addEventListener('resize', ()=>{
-  if(opened && cards.length){
-    fanOpen();
-  }
-});
+restartBtn.addEventListener('click', (e)=>{e.stopPropagation();restart();});
+overlay.addEventListener('click', (e)=>{if(e.target===overlay) closeCard();});
+window.addEventListener('resize', ()=>{ if(opened && cards.length){ fanOpen(); }});
 </script>
 </body>
 </html>
