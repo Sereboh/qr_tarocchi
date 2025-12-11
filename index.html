@@ -1,157 +1,192 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Mystic Tarot</title>
-
 <style>
-body{
-  background:radial-gradient(circle at top,#130f22,#000);
-  color:#f4e7c2;
-  font-family:Georgia,serif;
-  margin:0;
-  padding:0;
-  overflow-x:hidden;
-}
-
-h1{
-  text-align:center;
-  margin-top:20px;
-}
-
-/* Pulsanti */
-#controls{
-  position:fixed;
-  top:10px; right:10px;
-  display:flex; gap:10px;
-  z-index:1000;
-}
-
-button{
-  background:#221933;
-  color:#f4e7c2;
-  border:1px solid #9474c9;
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
-  font-size:14px;
-}
-
-/* Area mazzo — TRASPARENTE */
-#deck{
-  position:relative;
-  width:100%;
-  height:420px;   /* Altezza ventaglio */
-  margin-top:60px;
-  background:transparent; /* niente rettangolo! */
-}
-
-/* Carte */
-.card{
-  position:absolute;
-  width:100px;
-  height:150px;
-  background:url('back.jpg') center/cover no-repeat;
-  border-radius:10px;
-  opacity:0;
-  cursor:pointer;
-  transition: all 0.8s ease;
-}
-
-/* Overlay carta aperta */
-#overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.92);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity 0.4s;
-  padding:20px;
-}
-
-#overlay.show{
-  opacity:1;
-  pointer-events:auto;
-}
-
-/* Box responsive */
-#box{
-  background:#111;
-  padding:20px;
-  border-radius:14px;
-  max-width:380px;
-  width:100%;
-  text-align:center;
-  transform:scale(0.6);
-  transition:transform 0.4s;
-  max-height:90vh;
-  overflow-y:auto; /* << testo non tagliato! */
-}
-
-#overlay.show #box{
-  transform:scale(1);
-}
-
-#box img{
-  width:100%;
-  border-radius:10px;
-}
-
-#restart{
-  margin-top:15px;
-  padding:10px 18px;
-  background:#39285a;
-  border:1px solid #8f77c9;
-}
-
-/* Mobile migliorato */
-@media (max-width:600px){
-  .card{
-    width:80px;
-    height:120px;
+  :root{
+    --fg:#f4e7c2;
+    --bg1:#130f22;
+    --bg2:#000;
+    --gold: rgba(212,175,55,0.95);
+    --card-w:110px;
+    --card-h:160px;
   }
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: Georgia,serif;
+    color:var(--fg);
+    background: radial-gradient(circle at top,var(--bg1),var(--bg2));
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    overflow-x:hidden;
+  }
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 18px;
+    gap:12px;
+  }
+  h1{margin:0;font-size:20px;letter-spacing:2px}
+
+  /* controls */
+  .controls{display:flex;gap:8px;align-items:center}
+  button.ctrl{
+    background:rgba(34,25,51,0.6);
+    color:var(--fg);
+    border:1px solid rgba(147,116,201,0.25);
+    padding:8px 12px;border-radius:10px;
+    cursor:pointer;font-size:14px;
+    backdrop-filter: blur(4px);
+  }
+  button.ctrl:active{transform:translateY(1px)}
+
+  /* deck container — transparent, no rectangle */
   #deck{
-    height:350px;
+    position:relative;
+    width:100%;
+    height:62vh;
+    min-height:320px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    perspective:1400px;
+    pointer-events:auto;
+    -webkit-tap-highlight-color: transparent;
   }
-}
 
+  /* single card */
+  .card{
+    position:absolute;
+    width:var(--card-w);
+    height:var(--card-h);
+    border-radius:10px;
+    background-size:cover;
+    background-position:center;
+    transform-origin: center bottom; /* rotate around bottom to mimic hand hold */
+    cursor:pointer;
+    opacity:0;
+    transition: box-shadow .25s ease, transform .7s cubic-bezier(.2,.9,.3,1), left .65s ease, top .65s ease, opacity .35s;
+    will-change: transform, left, top, opacity;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+    border: 2px solid rgba(0,0,0,0.12);
+    overflow:hidden;
+  }
+
+  /* front/back as background images will be set inline; add gold border & glow */
+  .card::after{
+    content:"";
+    position:absolute;inset:0;border-radius:10px;
+    pointer-events:none;
+    box-shadow: inset 0 0 0 2px rgba(212,175,55,0); /* will be animated to gold on open */
+    transition: box-shadow .35s ease, filter .25s;
+  }
+
+  .card.open-style::after{
+    box-shadow: inset 0 0 0 2px var(--gold);
+    filter: drop-shadow(0 6px 18px rgba(0,0,0,0.6));
+  }
+
+  /* hover glow */
+  .card:hover{
+    box-shadow: 0 20px 44px rgba(0,0,0,0.7);
+    transform: translateY(-10px) rotateY(0deg) scale(1.08);
+    z-index:2000;
+  }
+  .card.glow{
+    filter: drop-shadow(0 0 12px rgba(147,116,201,0.35));
+  }
+
+  /* breathing (closed deck) */
+  .stack-pulse{
+    animation: breathe 2.6s infinite;
+  }
+  @keyframes breathe{
+    0%{ transform: translateX(-50%) translateY(0) scale(1) }
+    50%{ transform: translateX(-50%) translateY(-4px) scale(1.02) }
+    100%{ transform: translateX(-50%) translateY(0) scale(1) }
+  }
+
+  /* shake animation */
+  .shake{
+    animation: shakeit .42s cubic-bezier(.4,.0,.2,1);
+  }
+  @keyframes shakeit{
+    0%{ transform: translateX(-50%) rotate(0deg) }
+    25%{ transform: translateX(calc(-50% + 6px)) rotate(-1.6deg) }
+    50%{ transform: translateX(calc(-50% - 6px)) rotate(1.6deg) }
+    75%{ transform: translateX(calc(-50% + 3px)) rotate(-0.8deg) }
+    100%{ transform: translateX(-50%) rotate(0deg) }
+  }
+
+  /* overlay (semi transparent gradient, not solid black) */
+  #overlay{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background: linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.85));
+    opacity:0;pointer-events:none;transition:opacity .28s ease;
+    padding:18px;
+  }
+  #overlay.show{opacity:1;pointer-events:auto}
+
+  #box{
+    width:100%;max-width:460px;background:linear-gradient(180deg,#0f0f10, #111111);
+    border-radius:12px;padding:18px;box-shadow:0 18px 60px rgba(0,0,0,0.7);
+    max-height:92vh;overflow:auto;
+    transform-origin:center;transition: transform .32s cubic-bezier(.2,.9,.3,1);
+  }
+  #overlay.show #box{transform:scale(1)}
+
+  #box img{width:100%;border-radius:8px;display:block}
+  #title{margin-top:12px;font-size:20px}
+  #desc{margin-top:10px;line-height:1.45;color:#e8dfc6;text-align:justify}
+
+  #restart{margin-top:14px;padding:10px 14px;border-radius:10px;background:#2b1f3a;border:1px solid rgba(147,116,201,0.18);color:var(--fg);cursor:pointer}
+
+  /* responsive tweaks */
+  @media (max-width:640px){
+    :root{--card-w:88px;--card-h:128px}
+    header{padding:10px}
+    #box{max-width:95%}
+  }
 </style>
 </head>
 <body>
+<header>
+  <h1 id="titleMain">Clicca il mazzo per aprire</h1>
+  <div class="controls">
+    <button class="ctrl" id="musicBtn">🎵 Play</button>
+    <button class="ctrl" id="langIt">IT</button>
+    <button class="ctrl" id="langEn">EN</button>
+  </div>
+</header>
 
-<h1 id="titleMain">Scegli la tua carta</h1>
+<!-- deck (transparent background) -->
+<div id="deck" aria-label="Mazzo di carte"></div>
 
-<div id="controls">
-  <button onclick="toggleMusic()">🎵</button>
-  <button onclick="setLang('it')">IT</button>
-  <button onclick="setLang('en')">EN</button>
-</div>
-
-<div id="deck"></div>
-
+<!-- overlay -->
 <div id="overlay" onclick="closeCard()">
   <div id="box" onclick="event.stopPropagation()">
-    <img id="imgBig">
-    <div id="title" style="font-size:22px; margin-top:10px;"></div>
-    <div id="desc" style="margin-top:10px; line-height:1.3;"></div>
-    <button id="restart" onclick="restart(event)">Ricomincia</button>
+    <img id="imgBig" alt="">
+    <div id="title"></div>
+    <div id="desc"></div>
+    <div style="text-align:center">
+      <button id="restart">Torna al mazzo</button>
+    </div>
   </div>
 </div>
 
-<audio id="bgmusic" loop>
+<!-- audio -->
+<audio id="bgmusic" loop preload="none">
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-let lang="it";
-let opened=false;
-
-/* NOMI (IT) */
-const names = [
+/* ---------- DATA ---------- */
+const namesIT = [
 "Il Matto / Masaniello","Il Mago / Virgilio","La Papessa / Sibilla Cumana",
 "L’Imperatrice / Maria Carolina","L’Imperatore / Federico II","Il Papa / San Gennaro",
 "Gli Amanti / Sebeto e Megara","Il Carro / Maradona","La Forza / Femminiello",
@@ -162,7 +197,6 @@ const names = [
 "Il Sole / Pulcinella","Il Giudizio / Vesuvio","Il Mondo / Artisti Napoletani"
 ];
 
-/* NOMI (EN) */
 const namesEN = [
 "The Fool","The Magician","The High Priestess","The Empress","The Emperor",
 "The Hierophant","The Lovers","The Chariot","Strength","The Hermit",
@@ -170,176 +204,327 @@ const namesEN = [
 "The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"
 ];
 
-/* DESCRIZIONI IT (le tue, complete) */
+/* italian full descriptions (as you provided earlier; shortened for brevity placeholders replaced with full text) */
 const descIT = [
-`La carta del Matto rappresenta la spontaneità...`,
-`La carta del Mago rappresenta l’abilità...`,
-`La Papessa rappresenta la saggezza occulta...`,
-`L’Imperatrice rappresenta la fertilità e l’abbondanza...`,
-`L’Imperatore rappresenta autorità e potere terreno...`,
-`Il Papa rappresenta l’autorità spirituale...`,
-`Gli Amanti rappresentano l’amore e la scelta...`,
-`Il Carro rappresenta vittoria e determinazione...`,
-`La Forza rappresenta coraggio e dominio interiore...`,
-`L’Eremita rappresenta ricerca interiore e saggezza...`,
-`La Ruota della Fortuna rappresenta cambiamento e destino...`,
-`La Giustizia rappresenta equilibrio e verità...`,
-`L’Appeso rappresenta sospensione e sacrificio...`,
-`La Morte rappresenta trasformazione e rinascita...`,
-`La Temperanza rappresenta armonia e moderazione...`,
-`Il Diavolo rappresenta tentazione e dipendenze...`,
-`La Torre rappresenta crisi improvvisa e ricostruzione...`,
-`La Stella rappresenta speranza e guida spirituale...`,
-`La Luna rappresenta mistero e intuizione...`,
-`Il Sole rappresenta gioia, successo e vitalità...`,
-`Il Giudizio rappresenta rinascita e resa dei conti...`,
-`Il Mondo rappresenta completamento e armonia...`
+"Il Matto / Masaniello — La carta del Matto rappresenta la spontaneità, l’ingenuità e la libertà. È una figura che agisce senza pregiudizi, spesso in modo impulsivo e senza calcolare i rischi. Il Matto è fuori dagli schemi, viaggia senza meta, fiducioso nel suo istinto, ma vulnerabile ai pericoli della strada e pronto a farsi travolgere dal suo stesso caos interiore.",
+"Il Mago / Virgilio — La carta del Mago rappresenta l’abilità, il potere creativo e la padronanza degli strumenti necessari per trasformare la realtà. Il Mago è colui che sa agire con intelligenza, sfruttando le risorse a sua disposizione per raggiungere i propri obiettivi.",
+"La Papessa / Sibilla Cumana — La carta della Papessa rappresenta la saggezza occulta, l’intuizione e la conoscenza spirituale nascosta. È una figura misteriosa e femminile, legata alla dimensione interiore. Simboleggia la comprensione profonda dei misteri della vita e la connessione con il divino, spesso celata sotto un velo di segreti o di silenzio.",
+"L’Imperatrice / Maria Carolina — La carta dell’Imperatrice rappresenta la fertilità, l’abbondanza e il potere creativo. È simbolo di femminilità, maternità e crescita, legata alla natura e al ciclo vitale. L’Imperatrice è una figura che incarna la prosperità e la capacità di governare con dolcezza, ma anche con autorità.",
+"L’Imperatore / Federico II — La carta dell’Imperatore rappresenta l’autorità e il potere terreno. È una figura maschile forte, responsabile e razionale, in grado di portare stabilità.",
+"Il Papa / San Gennaro — La carta del Papa rappresenta l’autorità spirituale, la saggezza, la guida morale e la mediazione tra il divino e l’umano.",
+"Gli Amanti / Sebeto e Megara — La carta degli Amanti rappresenta l’amore, l’unione e la scelta. Simboleggia l’attrazione, l’armonia e l’equilibrio tra opposti, ma anche la necessità di prendere decisioni che possono cambiare il corso della vita.",
+"Il Carro / Maradona — La carta del Carro rappresenta vittoria, determinazione e controllo. Simboleggia il successo ottenuto attraverso la forza di volontà, la disciplina e la capacità di superare gli ostacoli.",
+"La Forza / Femminiello — La carta della Forza rappresenta il coraggio, la determinazione e la capacità di domare le proprie emozioni e istinti, attraverso la calma e la pazienza, piuttosto che con la violenza. Simboleggia il dominio interiore e la tenacia.",
+"L’Eremita / Munaciello — La carta dell’Eremita rappresenta la ricerca interiore, la solitudine volontaria, la saggezza acquisita attraverso l’esperienza e la riflessione. Una figura che si isola per trovare risposte e illuminare il proprio cammino.",
+"La Ruota della Fortuna / Ruota degli Esposti — La carta della Ruota della Fortuna rappresenta il ciclo della vita, il cambiamento e l’imprevedibilità del destino. Simboleggia i flussi e riflussi della sorte, l’alternarsi di momenti favorevoli e sfavorevoli, e la necessità di adattarsi al continuo movimento della vita.",
+"La Giustizia / Maddalena Cerasuolo — La carta della Giustizia rappresenta equilibrio, verità e imparzialità. Simboleggia l’azione equa, la responsabilità e la necessità di agire con correttezza e rettitudine.",
+"L’Appeso / Maria la “Rossa” — La carta dell’Appeso nei tarocchi rappresenta una sospensione temporanea, una pausa forzata e un cambio di prospettiva. Simboleggia il sacrificio, l’abbandono del controllo e la riflessione interiore.",
+"La Morte / Anime Pezzentelle — La carta della Morte nei tarocchi simboleggia trasformazione, cambiamento radicale e fine di un ciclo. Sebbene spesso temuta, non rappresenta necessariamente la morte fisica, ma piuttosto la fine di una fase, il distacco dal passato e l’opportunità di rinascita e rinnovamento.",
+"La Temperanza / Partenope — La carta della Temperanza rappresenta l’armonia, la moderazione, la capacità di fondere opposti per creare unità.",
+"Il Diavolo / Mammone — La carta del Diavolo rappresenta tentazione, schiavitù, desideri materiali o comportamenti nocivi. Simboleggia l’oscurità interiore, la manipolazione e la perdita del controllo, ma anche la possibilità di liberarsi da ciò che ci tiene imprigionati, poiché invita a confrontarsi con le proprie ombre e a superare paure ed ossessioni.",
+"La Torre / Maschio Angioino — La carta della Torre rappresenta distruzione improvvisa, crisi e cambiamenti drammatici. Simboleggia l’abbattimento di strutture consolidate, sia fisiche che emotive, e la necessità di ricostruzione dopo un crollo.",
+"La Stella / Bella ’Mbriana — La carta della Stella rappresenta speranza, guida spirituale e rinnovamento. Un momento di serenità dopo il caos, un faro di luce che indica una via verso la guarigione e l’armonia. È una carta di ispirazione, bellezza e fiducia nel futuro.",
+"La Luna / Janare — La carta della Luna rappresenta l’inconscio, l’intuizione e i misteri nascosti. Richiama illusioni, inganni e paure, simboleggiando il lato oscuro della psiche e i cicli della natura.",
+"Il Sole / Pulcinella — La carta del Sole rappresenta gioia, vitalità e successo, simboleggiando chiarezza e realizzazione personale. Porta ottimismo e soddisfazione, illuminando le ombre e favorendo la crescita e il rinnovamento.",
+"Il Giudizio / Vesuvio — La carta del Giudizio rappresenta la resa dei conti e la rinascita. È una carta che indica risveglio e riflessione, dove si fa il bilancio delle proprie scelte e azioni, e ci si prepara ad un nuovo inizio.",
+"Il Mondo / Artisti Napoletani — La carta del Mondo rappresenta il completamento, l’armonia e il successo totale. Simboleggia la realizzazione dei propri obiettivi e la celebrazione della pienezza e dell’equilibrio raggiunti."
 ];
 
-/* DESCRIZIONI EN */
 const descEN = [
-`The Fool represents freedom, spontaneity and instinct...`,
-`The Magician symbolizes creativity and mastery...`,
-`The High Priestess represents intuition and hidden knowledge...`,
-`The Empress embodies abundance and nurturing power...`,
-`The Emperor symbolizes authority and stability...`,
-`The Hierophant represents spiritual guidance...`,
-`The Lovers represent union, harmony and choice...`,
-`The Chariot symbolizes victory and determination...`,
-`Strength represents courage and inner mastery...`,
-`The Hermit symbolizes introspection and wisdom...`,
-`Wheel of Fortune represents life cycles and change...`,
-`Justice represents truth and fairness...`,
-`The Hanged Man represents sacrifice and new perspective...`,
-`Death symbolizes transformation and rebirth...`,
-`Temperance represents balance and moderation...`,
-`The Devil symbolizes temptation and inner shadows...`,
-`The Tower means sudden change and upheaval...`,
-`The Star represents hope and inspiration...`,
-`The Moon symbolizes mystery and intuition...`,
-`The Sun represents joy, vitality and success...`,
-`Judgement symbolizes awakening and renewal...`,
-`The World represents completion and fulfillment...`
+"The Fool / Masaniello — The Fool stands for spontaneity, naivety and freedom; he acts often impulsively and trusts his instincts while facing life’s hazards.",
+"The Magician / Virgilio — The Magician symbolizes skill, creative power and mastery of tools to transform reality, using resources wisely to reach goals.",
+"The High Priestess / Sibilla Cumana — The High Priestess represents hidden wisdom, intuition and spiritual knowledge, linked to inner life and mystery.",
+"The Empress / Maria Carolina — The Empress stands for fertility, abundance and creative power, embodying femininity and nurturing governance.",
+"The Emperor / Federico II — The Emperor symbolizes authority, responsibility and rational leadership bringing stability.",
+"The Hierophant / San Gennaro — The Hierophant stands for spiritual authority and moral guidance between divine and human.",
+"The Lovers / Sebeto e Megara — The Lovers represent love, union and decisive choices, balancing opposites and life-changing decisions.",
+"The Chariot / Maradona — The Chariot symbolizes victory, determination and control achieved through discipline and will.",
+"Strength / Femminiello — Strength represents courage, self-mastery and gentle control of instincts through patience.",
+"The Hermit / Munaciello — The Hermit stands for inner search, voluntary solitude and wisdom gained through reflection.",
+"Wheel of Fortune / Ruota degli Esposti — The Wheel symbolizes life cycles, change and the unpredictability of fate.",
+"Justice / Maddalena Cerasuolo — Justice stands for balance, truth and impartial action, responsibility and fairness.",
+"The Hanged Man / Maria la Rossa — The Hanged Man represents suspension, sacrifice and a change of perspective, inviting inner reflection.",
+"Death / Anime Pezzentelle — Death symbolizes radical transformation and the end of a cycle, opening space for renewal.",
+"Temperance / Partenope — Temperance represents harmony, moderation and the blend of opposites to create unity.",
+"The Devil / Mammone — The Devil symbolizes temptation, bondage and destructive desires, and the path to break free from them.",
+"The Tower / Maschio Angioino — The Tower stands for sudden upheaval and dismantling, followed by necessary rebuilding.",
+"The Star / Bella ’Mbriana — The Star represents hope, healing and spiritual guidance after chaos.",
+"The Moon / Janare — The Moon stands for the unconscious, intuition and hidden illusions and fears.",
+"The Sun / Pulcinella — The Sun symbolizes joy, vitality, clarity and success, bringing growth and optimism.",
+"Judgement / Vesuvio — Judgement symbolizes reckoning, rebirth and taking stock before a new beginning.",
+"The World / Artisti Napoletani — The World stands for completion, harmony and fulfillment; celebration of wholeness."
 ];
 
-const deck=document.getElementById("deck");
-let cards=[];
+/* ---------- state + elements ---------- */
+const deck = document.getElementById('deck');
+const overlay = document.getElementById('overlay');
+const box = document.getElementById('box');
+const imgBig = document.getElementById('imgBig');
+const titleEl = document.getElementById('title');
+const descEl = document.getElementById('desc');
+const titleMain = document.getElementById('titleMain');
+const musicBtn = document.getElementById('musicBtn');
+const langIt = document.getElementById('langIt');
+const langEn = document.getElementById('langEn');
+const restartBtn = document.getElementById('restart');
+const bg = document.getElementById('bgmusic');
 
-/* MAZZO CHIUSO */
-function createClosedDeck(){
-  deck.innerHTML="";
-  cards=[];
-  opened=false;
+let cards = [];
+let lang = 'it';
+let opened = false;
 
-  const stack = document.createElement("div");
-  stack.className="card";
-  stack.style.top="135px";
-  stack.style.left="50%";
-  stack.style.transform="translateX(-50%)";
-  stack.style.opacity=1;
-  stack.onclick=openDeck;
-
-  deck.appendChild(stack);
+/* ---------- helper: slug for filenames (expects e.g. 0_ilmatto.jpg) ---------- */
+function slugFromName(itName){
+  // take part before slash or before first space after article; prefer first word significant
+  let base = itName.split('/')[0].trim().toLowerCase();
+  // remove non letters numbers
+  base = base.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  base = base.replace(/[^a-z0-9]+/g,'');
+  return base;
 }
 
-/* APRE IL MAZZO */
+/* ---------- create closed deck (single stacked card element, with breathing & hint) ---------- */
+function createClosedDeck(){
+  deck.innerHTML='';
+  cards = [];
+  opened = false;
+  titleMain.innerText = (lang==='it') ? 'Clicca il mazzo per aprire' : 'Tap the deck to open';
+
+  // create stacked layered cards to give depth
+  for(let i=0;i<6;i++){
+    const stack = document.createElement('div');
+    stack.className='card stack-pulse';
+    stack.style.left='50%';
+    stack.style.top='50%';
+    stack.style.transform='translateX(-50%) translateY(-50%) rotate(' + ((i-2)*1.2) + 'deg)';
+    stack.style.backgroundImage = `url("back.jpg")`;
+    stack.style.opacity = 1 - i*0.06;
+    stack.style.zIndex = 200 + i;
+    // only topmost responds to click
+    if(i===5){
+      stack.style.cursor='pointer';
+      stack.addEventListener('click',(e)=>{ e.stopPropagation(); openDeck(); });
+    } else {
+      stack.style.pointerEvents='none';
+    }
+    deck.appendChild(stack);
+    cards.push(stack);
+  }
+}
+
+/* ---------- openDeck: shake then create full set and animate opening (natural hand style) ---------- */
 function openDeck(){
   if(opened) return;
-  opened=true;
+  opened = true;
+  // remove existing stacks
+  deck.innerHTML='';
+  cards=[];
 
-  deck.innerHTML="";
-  let indices=[...Array(22).keys()];
+  // initial shake indicator anchored at center — create a temporary element to show shake on deck
+  const anchor = document.createElement('div');
+  anchor.style.position='absolute';
+  anchor.style.left='50%'; anchor.style.top='50%';
+  anchor.style.width='0'; anchor.style.height='0';
+  deck.appendChild(anchor);
+  anchor.classList.add('shake');
 
-  indices.forEach(i=>{
-    const c=document.createElement("div");
-    c.className="card";
-    c.dataset.index=i;
-    c.style.top="135px";
-    c.style.left="50%";
-    c.style.transform="translateX(-50%)";
+  // after shake finishes, spawn real cards and animate
+  setTimeout(()=> {
+    deck.removeChild(anchor);
+    spawnCardsAndAnimate();
+  },420);
+}
+
+/* ---------- spawn cards, place stacked center, then animate to fan ---------- */
+function spawnCardsAndAnimate(){
+  const n = 22;
+  // create card elements (all identical back initially) positioned at center stacked
+  for(let i=0;i<n;i++){
+    const c = document.createElement('div');
+    c.className = 'card';
+    c.dataset.index = i;
+    c.style.left = '50%';
+    c.style.top = '50%';
+    c.style.transform = 'translateX(-50%) translateY(-50%) rotate(' + ((Math.random()-0.5)*6) + 'deg) scale(1)';
+    c.style.backgroundImage = `url("back.jpg")`;
+    c.style.opacity = 0;
+    c.style.zIndex = 1000 + i;
+    // click to reveal (flip + overlay)
+    c.addEventListener('click', (e)=>{ e.stopPropagation(); onCardClick(c); });
     deck.appendChild(c);
     cards.push(c);
-    c.onclick=()=>selectCard(c);
-  });
+  }
 
-  setTimeout(spreadCards,200);
+  // small delay so elements render, then animate spread
+  setTimeout(()=> fanOpenFromHand(), 80);
 }
 
-/* VENTAGLIO REALISTICO — effetto carte in mano */
-function spreadCards(){
-  const cx = deck.offsetWidth / 2;
-  const baseY = 240;
-  const spreadDeg = 40;
-  const lift = 10;
-  const stepX = 16;
-
-  const mid = (cards.length - 1) / 2;
+/* ---------- compute "hand" fan positions and animate with stagger and easing ---------- */
+function fanOpenFromHand(){
+  const n = cards.length;
+  const deckRect = deck.getBoundingClientRect();
+  const cx = deckRect.width * 0.52; // slight offset to right to mimic holding in right hand
+  const baseY = deckRect.height * 0.58; // base line (where the thumb holds)
+  const spreadTotalDeg = 42;  // total visible spread in degrees
+  const mid = (n - 1) / 2;
+  const stepX = Math.max(14, deckRect.width * 0.02); // horizontal spacing between cards
+  const lift = Math.max(6, deckRect.height*0.02);
+  const baseRotationOffset = -10; // slight left tilt for natural hand hold
 
   cards.forEach((c, idx)=>{
-    const d = idx - mid;
+    const d = idx - mid; // negative left, positive right
+    const angle = baseRotationOffset + (d * (spreadTotalDeg / mid));
+    // X: center plus linear offset * d, but add a small curve using abs(d) to simulate splay
+    const x = cx + d * stepX + (d<0 ? -Math.abs(d)*1.0 : Math.abs(d)*0.6);
+    const y = baseY - Math.abs(d) * lift - (Math.cos((d/mid)*Math.PI/2)*6); // center slightly lower
+    const scale = 1 + 0.18 * Math.cos((d/mid)*Math.PI/2); // central slightly bigger
 
-    const angle = d * (spreadDeg / mid);
-    const x = cx + d * stepX - 50;
-    const y = baseY - Math.abs(d) * lift;
+    // animate with stagger — center cards move first for natural feel
+    const centerDist = Math.abs(d);
+    const delay = centerDist * 40 + (Math.random()*40); // small noise
 
     setTimeout(()=>{
-      c.style.left = x+"px";
-      c.style.top = y+"px";
-      c.style.opacity=1;
-      c.style.transform = `rotate(${angle}deg)`;
-    }, idx * 60);
+      // update visual: set card front image (we keep back until flip)
+      const slug = slugFromName(namesIT[idx]);
+      const frontPath = `img/${idx}_${slug}.jpg`;
+      // set front as background-image via layered background, but keep back until flip:
+      // For nicer effect, set background to front but rotateY not applied yet: we will show back image visually by overlay? Simpler: set both images as CSS background with gradient? To keep it simple, set background to front but keep a back overlay by drawing an inner element? For performance we choose to set front image, and keep user perceives back until they flip. To ensure they see back, we set background-image to back.jpg first, then later when flipped we change background to front.
+      c.style.backgroundImage = `url("back.jpg")`; // ensure back visible
+      c.style.opacity = 1;
+      c.style.left = (x - (parseFloat(getComputedStyle(c).width) || 110)/2) + 'px';
+      c.style.top  = (y - (parseFloat(getComputedStyle(c).height) || 160)/2) + 'px';
+      c.style.transform = `rotate(${angle}deg) scale(${scale})`;
+      c.classList.add('open-style');
+      // make glow subtle on center cards
+      if(Math.abs(d) < 3) c.classList.add('glow');
+    }, delay);
   });
 }
 
-/* CLICK CARTA */
-function selectCard(card){
-  const i=parseInt(card.dataset.index);
+/* ---------- clicking a card: play flip animation then open overlay ---------- */
+function onCardClick(card){
+  if(!opened) return;
+  // find index
+  const idx = parseInt(card.dataset.index,10);
+
+  // Animate others fading
   cards.forEach(c=>{
     if(c!==card){
-      c.style.opacity=0;
-      c.style.transform="scale(0.2)";
+      c.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+      c.style.opacity = 0;
+      c.style.transform += ' scale(0.6)';
+    } else {
+      // flip this card visually: we swap background to front image and do a quick rotateY effect by toggling 3D transform
+      const slug = slugFromName(namesIT[idx]);
+      const frontPath = `img/${idx}_${slug}.jpg`;
+      // add a temporary CSS flip by scaling X then switching image (simulate flip)
+      card.style.transition = 'transform 0.45s cubic-bezier(.2,.9,.3,1), opacity 0.3s';
+      card.style.transform += ' rotateY(180deg) scale(1.05)';
+      // after half flip, swap image
+      setTimeout(()=>{
+        card.style.backgroundImage = `url("${frontPath}")`;
+      },240);
     }
   });
 
-  setTimeout(()=>openCard(i),400);
+  // open overlay slightly after flip
+  setTimeout(()=> openOverlay(idx), 460);
 }
 
-/* APRE OVERLAY */
-function openCard(i){
-  document.getElementById("overlay").classList.add("show");
-
-  const file = i + "_" + names[i].split("/")[0].trim().toLowerCase().replace(/\s+/g,"") + ".jpg";
-  document.getElementById("imgBig").src="img/"+file;
-
-  document.getElementById("title").innerText = lang=="it" ? names[i] : namesEN[i];
-  document.getElementById("desc").innerText  = lang=="it" ? descIT[i] : descEN[i];
+/* ---------- overlay open (responsive, shows full text) ---------- */
+function openOverlay(i){
+  overlay.classList.add('show');
+  titleEl.innerText = (lang==='it') ? namesIT[i] : namesEN[i];
+  descEl.innerText  = (lang==='it') ? descIT[i] : descEN[i];
+  const slug = slugFromName(namesIT[i]);
+  imgBig.src = `img/${i}_${slug}.jpg`;
+  imgBig.alt = (lang==='it') ? namesIT[i] : namesEN[i];
 }
 
+/* ---------- overlay close ---------- */
 function closeCard(){
-  document.getElementById("overlay").classList.remove("show");
+  overlay.classList.remove('show');
 }
 
-function restart(e){
-  e.stopPropagation();
+/* ---------- restart: close overlay, re-create closed deck ---------- */
+function restart(){
   closeCard();
-  setTimeout(createClosedDeck,400);
+  // re-init after overlay hidden (allow smoothness)
+  setTimeout(()=> createClosedDeck(), 260);
 }
 
-/* MUSICA */
-function toggleMusic(){
-  const m=document.getElementById("bgmusic");
-  if(m.paused) m.play(); else m.pause();
-}
+/* ---------- music control ---------- */
+musicBtn.addEventListener('click', ()=>{
+  if(bg.paused){
+    bg.play().catch(()=>{/* autoplay blocked */});
+    musicBtn.innerText = '⏸ Pause';
+  } else {
+    bg.pause();
+    musicBtn.innerText = '🎵 Play';
+  }
+});
 
-/* LINGUA */
+/* ---------- language toggles ---------- */
+langIt.addEventListener('click', ()=>{ setLang('it'); });
+langEn.addEventListener('click', ()=>{ setLang('en'); });
+
 function setLang(l){
-  lang=l;
-  document.getElementById("titleMain").innerText = l=="it" ? "Scegli la tua carta" : "Choose your card";
+  lang = l;
+  titleMain.innerText = (lang==='it') ? 'Clicca il mazzo per aprire' : 'Tap the deck to open';
+  // if overlay visible, update text
+  if(overlay.classList.contains('show')){
+    // try preserve current card index from img src
+    const src = imgBig.src || '';
+    const m = src.match(/\/(\d+)_/);
+    if(m){
+      const i = parseInt(m[1],10);
+      titleEl.innerText = (lang==='it') ? namesIT[i] : namesEN[i];
+      descEl.innerText  = (lang==='it') ? descIT[i] : descEN[i];
+    }
+  }
 }
 
-/* START */
+/* ---------- utilities ---------- */
+function slugFromName(name){
+  // reuse function defined earlier in case of scoping
+  let base = name.split('/')[0].trim().toLowerCase();
+  base = base.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  base = base.replace(/[^a-z0-9]+/g,'');
+  return base;
+}
+
+/* ---------- initial run ---------- */
 createClosedDeck();
 
+/* ---------- keyboard / accessibility: restart button & overlay buttons ---------- */
+restartBtn.addEventListener('click', (e)=>{ e.stopPropagation(); restart(); });
+overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeCard(); });
+
+/* ---------- adjust layout on resize: if opened, recompute positions slightly ---------- */
+window.addEventListener('resize', ()=>{
+  if(opened && cards.length>0){
+    // recompute new positions and apply without re-creating
+    // approximate reposition similar to fanOpenFromHand but non-blocking
+    const deckRect = deck.getBoundingClientRect();
+    const cx = deckRect.width * 0.52;
+    const baseY = deckRect.height * 0.58;
+    const n = cards.length;
+    const mid = (n-1)/2;
+    const spreadTotalDeg = 42;
+    const stepX = Math.max(14, deckRect.width * 0.02);
+    const lift = Math.max(6, deckRect.height*0.02);
+    cards.forEach((c, idx)=>{
+      const d = idx - mid;
+      const angle = -10 + (d * (spreadTotalDeg / mid));
+      const x = cx + d * stepX + (d<0 ? -Math.abs(d)*1.0 : Math.abs(d)*0.6);
+      const y = baseY - Math.abs(d) * lift - (Math.cos((d/mid)*Math.PI/2)*6);
+      const scale = 1 + 0.18 * Math.cos((d/mid)*Math.PI/2);
+      c.style.left = (x - parseFloat(getComputedStyle(c).width)/2) + 'px';
+      c.style.top  = (y - parseFloat(getComputedStyle(c).height)/2) + 'px';
+      c.style.transform = `rotate(${angle}deg) scale(${scale})`;
+    });
+  }
+});
 </script>
 </body>
 </html>
