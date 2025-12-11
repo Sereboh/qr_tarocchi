@@ -1,155 +1,109 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mystic Tarot</title>
 <style>
-body {
-  background: radial-gradient(circle at top,#130f22,#000);
-  color: #f4e7c2;
-  font-family: Georgia,serif;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-}
+  :root{--fg:#f4e7c2;--bg1:#130f22;--bg2:#000;}
+  body{
+    margin:0;padding:0;
+    font-family: Georgia,serif;
+    color:var(--fg);
+    background:radial-gradient(circle at top,var(--bg1),var(--bg2));
+    overflow-x:hidden;
+  }
 
-h1 {
-  text-align: center;
-  margin: 20px 0;
-  letter-spacing: 2px;
-}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+  h1{margin:0;font-size:20px;letter-spacing:2px}
+  .controls{display:flex;gap:8px;align-items:center}
 
-#deck {
-  position: relative;
-  width: 100%;
-  height: 60vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  perspective: 1200px;
-}
+  button, .toggle {
+    background:transparent;border:1px solid rgba(244,231,194,0.15);
+    color:var(--fg);padding:8px 12px;border-radius:10px;cursor:pointer;
+    backdrop-filter: blur(2px);
+  }
+  button:hover, .toggle:hover{filter:brightness(1.08)}
 
-.card {
-  position: absolute;
-  width: 100px;
-  height: 150px;
-  border-radius: 10px;
-  cursor: pointer;
-  transform-style: preserve-3d;
-  transition: transform 0.6s ease, top 0.6s ease, left 0.6s ease, opacity 0.5s ease;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-}
+  #deck{
+    position:relative;width:100%;height:62vh;
+    display:flex;align-items:center;justify-content:center;
+    perspective:1400px;overflow:hidden;
+  }
 
-.card img {
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  backface-visibility: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
+  .card{
+    position:absolute;width:110px;height:160px;border-radius:10px;
+    transform-style:preserve-3d;cursor:pointer;
+    transition: transform 0.6s cubic-bezier(.2,.9,.3,1), top 0.6s, left 0.6s, opacity 0.4s;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    will-change: transform, left, top;
+  }
+  .card img{width:100%;height:100%;border-radius:10px;position:absolute;left:0;top:0;backface-visibility:hidden}
 
-.card .front {
-  transform: rotateY(180deg);
-}
+  .card .front{ transform: rotateY(180deg); }
+  .card.stacked{ transform: translate(-50%,-50%) rotate(0deg) scale(1); left:50%; top:50% }
+  .card:hover{ z-index:1200; transform-origin:center; transform: translate(0,-10px) scale(1.12) rotateY(0deg) }
 
-.card:hover {
-  transform: scale(1.15);
-  z-index: 100;
-}
+  /* overlay */
+  #overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s}
+  #overlay.show{opacity:1;pointer-events:auto}
+  #box{background:#111;padding:18px;border-radius:14px;max-width:420px;text-align:center;transform:scale(.6) rotate(-12deg);transition:transform .45s}
+  #overlay.show #box{transform:scale(1) rotate(0deg)}
+  #box img{width:100%;border-radius:10px}
+  #title{margin-top:10px;font-size:22px}
+  #desc{margin-top:12px;text-align:justify;color:#eae0c3}
 
-#overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s;
-}
-
-#overlay.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-#box {
-  background: #111;
-  padding: 20px;
-  border-radius: 14px;
-  max-width: 340px;
-  text-align: center;
-  transform: scale(0.5) rotate(-15deg);
-  transition: transform 0.7s;
-}
-
-#overlay.show #box {
-  transform: scale(1) rotate(0deg);
-}
-
-#box img {
-  width: 100%;
-  border-radius: 10px;
-}
-
-#title {
-  margin-top: 10px;
-  font-size: 22px;
-}
-
-#desc {
-  margin-top: 10px;
-  text-align: justify;
-}
-
-#restart {
-  margin-top: 15px;
-  padding: 8px 15px;
-  background: #f4e7c2;
-  color: #111;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-#restart:hover {
-  background: #e0d4a0;
-}
+  /* small screens */
+  @media (max-width:520px){
+    .card{width:86px;height:125px}
+    #box{max-width:320px}
+  }
 </style>
 </head>
 <body>
+<header>
+  <h1 id="titleMain">Scegli la tua carta</h1>
+  <div class="controls">
+    <button id="langBtn" class="toggle">EN</button>
+    <button id="musicBtn">Play music</button>
+  </div>
+</header>
 
-<h1 id="titleMain">Scegli la tua carta</h1>
+<!-- deck area -->
+<div id="deck" role="button" aria-label="Mazzo di carte (clicca per aprire)"></div>
 
-<div id="deck"></div>
-
+<!-- overlay for selected card -->
 <div id="overlay" onclick="closeCard()">
   <div id="box" onclick="event.stopPropagation()">
-    <img id="imgBig">
+    <img id="imgBig" alt="">
     <div id="title"></div>
     <div id="desc"></div>
-    <button id="restart" onclick="restart()">Ricomincia</button>
+    <div style="margin-top:12px">
+      <button id="restart" onclick="restart()">Ricomincia</button>
+    </div>
   </div>
 </div>
 
-<audio id="bgmusic" loop>
+<audio id="bgmusic" loop preload="none">
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-// Carte e testi
-const names = [
+/* --------------- data (IT + EN) --------------- */
+const names_IT = [
 "Il Matto","Il Mago","La Papessa","L'Imperatrice","L'Imperatore",
 "Il Papa","Gli Amanti","Il Carro","La Forza","L’Eremita",
 "La Ruota della Fortuna","La Giustizia","L’Appeso","La Morte",
 "La Temperanza","Il Diavolo","La Torre","La Stella","La Luna",
 "Il Sole","Il Giudizio","Il Mondo"
+];
+
+const names_EN = [
+"The Fool","The Magician","The High Priestess","The Empress","The Emperor",
+"The Hierophant","The Lovers","The Chariot","Strength","The Hermit",
+"Wheel of Fortune","Justice","The Hanged Man","Death",
+"Temperance","The Devil","The Tower","The Star","The Moon",
+"The Sun","Judgement","The World"
 ];
 
 const texts_IT = [
@@ -177,118 +131,305 @@ const texts_IT = [
 "Il Mondo / Artisti Napoletani — La carta del Mondo rappresenta il completamento, l’armonia e il successo totale. Simboleggia la realizzazione dei propri obiettivi e la celebrazione della pienezza e dell’equilibrio raggiunti."
 ];
 
-let lang = "it";
-const deck = document.getElementById("deck");
-let cards = [];
+const texts_EN = [
+"The Fool / Masaniello — The Fool stands for spontaneity, naivety and freedom. He acts without prejudice and often impulsively, trusting his instincts while exposed to life's hazards.",
+"The Magician / Virgilio — The Magician symbolizes skill, creative power and mastery of tools to transform reality. He uses intelligence and available resources to achieve goals.",
+"The High Priestess / Sibilla Cumana — The High Priestess represents hidden wisdom, intuition and spiritual knowledge; a mysterious feminine figure connected to inner life and the divine.",
+"The Empress / Maria Carolina — The Empress stands for fertility, abundance and creative power; she represents femininity, growth and nurturing authority.",
+"The Emperor / Frederick II — The Emperor symbolizes worldly authority and stable, rational leadership that brings order.",
+"The Hierophant / San Gennaro — The Hierophant stands for spiritual authority, moral guidance and the bridge between the divine and human.",
+"The Lovers / Sebeto and Megara — The Lovers represent love, union and choice: attraction and balance between opposites, and life-changing decisions.",
+"The Chariot / Maradona — The Chariot symbolizes victory, determination and control: success through discipline and willpower.",
+"Strength / Femminiello — Strength represents courage, self-mastery and the gentle control of instincts through patience rather than force.",
+"The Hermit / Munaciello — The Hermit stands for inner search, voluntary solitude and wisdom gained through reflection and experience.",
+"Wheel of Fortune / Ruota degli Esposti — The Wheel of Fortune symbolizes life cycles, change and the unpredictability of fate; adapt to its turns.",
+"Justice / Maddalena Cerasuolo — Justice represents balance, truth and fairness, urging responsibility and righteous action.",
+"The Hanged Man / Maria la “Rossa” — The Hanged Man stands for suspension, sacrifice and a change of perspective; a pause that invites inner reflection.",
+"Death / Anime Pezzentelle — Death symbolizes radical transformation and the end of a cycle, opening space for renewal rather than literal death.",
+"Temperance / Partenope — Temperance represents harmony, moderation and the blending of opposites to create unity.",
+"The Devil / Mammone — The Devil symbolizes temptation, bondage and destructive desires, but also the chance to confront and break free from inner chains.",
+"The Tower / Maschio Angioino — The Tower stands for sudden destruction and crisis, prompting the dismantling of old structures and subsequent rebuilding.",
+"The Star / Bella ’Mbriana — The Star represents hope, renewal and spiritual guidance; a peaceful beacon after chaos.",
+"The Moon / Janare — The Moon stands for the unconscious, intuition and hidden mysteries, also illusions and fears of the psyche.",
+"The Sun / Pulcinella — The Sun represents joy, vitality and success, bringing clarity, growth and renewed energy.",
+"Judgement / Vesuvio — Judgement symbolizes reckoning and rebirth, a time to evaluate choices and prepare for a new beginning.",
+"The World / Neapolitan Artists — The World stands for completion, harmony and full achievement: celebration of wholeness."
+];
 
-// Shuffle array
-function shuffleArray(array){
-  for(let i=array.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [array[i],array[j]]=[array[j],array[i]];
+/* --------------- state + elements --------------- */
+let lang = 'it'; // current language
+const deck = document.getElementById('deck');
+const overlay = document.getElementById('overlay');
+const imgBig = document.getElementById('imgBig');
+const titleEl = document.getElementById('title');
+const descEl = document.getElementById('desc');
+const titleMain = document.getElementById('titleMain');
+const langBtn = document.getElementById('langBtn');
+const musicBtn = document.getElementById('musicBtn');
+const bg = document.getElementById('bgmusic');
+
+let cards = [];
+let opened = false; // deck opened state
+let indices = [];    // permutation
+
+/* helper: shuffle */
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
-  return array;
+  return a;
 }
 
-// Create cards
-function createCards(){
-  deck.innerHTML = "";
-  let indices = [...Array(names.length).keys()];
-  indices = shuffleArray(indices);
-
+/* create card elements stacked in center */
+function createStack(){
+  deck.innerHTML = '';
+  indices = [...Array(names_IT.length).keys()];
+  indices = shuffle(indices);
   cards = [];
-  indices.forEach((i)=>{
-    const c = document.createElement("div");
-    c.className = "card";
 
-    const back = document.createElement("img");
-    back.src = "back.jpg";
-    back.className = "back";
+  indices.forEach((i, pos) => {
+    const c = document.createElement('div');
+    c.className = 'card stacked';
+    c.dataset.index = i;
+
+    const back = document.createElement('img');
+    back.className = 'back';
+    back.alt = '';
+    back.src = 'back.jpg';
+
+    const front = document.createElement('img');
+    front.className = 'front';
+    front.alt = names_IT[i];
+    // image naming convention (you use in site)
+    front.src = `img/${i}_${names_IT[i].toLowerCase().replace(/\s+/g,'').replace(/’|'/g,'')}.jpg`;
+
     c.appendChild(back);
-
-    const front = document.createElement("img");
-    front.src = "img/"+i+"_"+names[i].toLowerCase().replace(/\s/g,"")+".jpg";
-    front.className = "front";
     c.appendChild(front);
 
-    c.dataset.index = i;
-    c.style.top = "50%";
-    c.style.left = "50%";
-    c.style.transform = "translate(-50%,-50%) rotate(0deg)";
-    c.onclick = ()=>flipCard(c);
+    // small random offset while stacked to look natural
+    const rx = (Math.random()-0.5)*6;
+    const ry = (Math.random()-0.5)*6;
+    c.style.left = `calc(50% + ${rx}px)`;
+    c.style.top = `calc(50% + ${ry}px)`;
+    c.style.transform = `translate(-50%,-50%) rotate(${(Math.random()-0.5)*6}deg)`;
+
+    // click behaviour: if deck closed, open deck; if already opened, flip card
+    c.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if(!opened){ openDeck(); return; }
+      flipCard(c);
+    });
+
     deck.appendChild(c);
     cards.push(c);
   });
-  spreadCards();
 }
 
-// Ventaglio a semicerchio con pancia verso il basso e scaling progressivo
-function spreadCards(){
-  const radius = deck.offsetWidth / 2.5;
-  const centerX = deck.offsetWidth / 2;
-  const centerY = deck.offsetHeight / 2 - 50;
-  const totalAngle = Math.PI;
-  const step = totalAngle / (cards.length - 1);
+/* compute positions for semicerchio with 'pancia verso il basso' and vertex centered */
+function computePositions(){
+  const w = deck.offsetWidth;
+  const h = deck.offsetHeight;
+  // radius relative to width/height so arc fits; larger for wide screens
+  const radius = Math.min(w*0.46, 1000);
+  const centerX = w/2;
+  // centerY moved up so arc bulges downward (pancia verso il basso)
+  const centerY = h/2 - Math.min(60, h*0.08);
+  const n = cards.length;
+  const totalAngle = Math.PI; // 180 deg
+  const step = totalAngle / (n - 1);
+  const positions = [];
 
+  for(let idx=0; idx<n; idx++){
+    const angle = step*idx - totalAngle/2; // from -90deg to +90deg (radians)
+    // X uses sin(angle) so left-right distribution
+    const x = centerX + radius * Math.sin(angle);
+    // Y uses (1 - cos(angle)) so center is lowest (pancia down)
+    const y = centerY + radius * (1 - Math.cos(angle));
+    // rotate slightly outward: smaller factor for subtlety
+    const rotate = angle * (180/Math.PI) * 0.55;
+    // scale progressive: centre larger
+    const scale = 1 + 0.22 * Math.cos(angle);
+    positions.push({x,y,rotate,scale,angle});
+  }
+  return positions;
+}
+
+/* animate opening: cards move from stacked center to computed arc positions.
+   sequential stagger for nice effect. */
+function openDeck(){
+  if(opened) return;
+  opened = true;
+  titleMain.innerText = (lang==='it') ? "Scegli la tua carta" : "Choose your card";
+
+  const positions = computePositions();
+  // We must map cards order to positions so center card is central visually.
+  // We'll sort cards by their current stacked order (indices array) and distribute positions
+  // so the middle position corresponds to the card at Math.floor(n/2)
+  const n = cards.length;
+  // For smoother UX: place cards in the visible order by index in indices array (already shuffled)
   cards.forEach((c, idx)=>{
-    const angle = step * idx - totalAngle/2;
-    const x = centerX + radius * Math.sin(angle) - 50;
-    const y = centerY + radius * (1 - Math.cos(angle)) - 75;
+    // stagger times: center opens first
+    const delay = Math.abs(idx - Math.floor(n/2)) * 60; // ms
+    const pos = positions[idx]; // direct mapping (cards already in shuffled order)
+    setTimeout(()=>{
+      c.style.left = (pos.x - 55) + 'px'; // card width ~110 -> center offset
+      c.style.top  = (pos.y - 80) + 'px'; // card height ~160 -> center offset
+      c.style.transform = `translate(0,0) rotate(${pos.rotate}deg) scale(${pos.scale})`;
+      c.style.opacity = 1;
+      c.classList.remove('stacked');
+      c.style.zIndex = Math.round(1000 - Math.abs(idx - n/2)); // central cards above
+    }, delay);
+  });
 
-    // Scaling progressivo: centrale più grande, esterne più piccole
-    const scale = 1 + 0.2 * Math.cos(angle);
+  // after full animation, ensure hover handlers active (already added in spread)
+}
 
-    const rotate = angle * 180 / Math.PI * 0.5;
-
-    c.style.left = x + "px";
-    c.style.top = y + "px";
-    c.style.transform = `translate(0,0) rotate(${rotate}deg) scale(${scale})`;
-    c.style.opacity = 1;
-
-    c.onmouseenter = ()=>{
-      c.style.transform = `translate(0,-10px) rotate(${rotate}deg) scale(${scale * 1.05})`;
+/* close (re-stack) deck with animation */
+function closeDeck(){
+  if(!opened) return;
+  opened = false;
+  cards.forEach((c,idx)=>{
+    setTimeout(()=>{
+      // small random offsets to make stacked look natural
+      const rx = (Math.random()-0.5)*6;
+      const ry = (Math.random()-0.5)*6;
+      c.style.left = `calc(50% + ${rx}px)`;
+      c.style.top = `calc(50% + ${ry}px)`;
+      c.style.transform = `translate(-50%,-50%) rotate(${(Math.random()-0.5)*6}deg) scale(1)`;
       c.style.zIndex = 100;
-    }
-    c.onmouseleave = ()=>{
-      c.style.transform = `translate(0,0) rotate(${rotate}deg) scale(${scale})`;
-      c.style.zIndex = "";
-    }
+    }, idx*25);
   });
 }
 
-// Flip card
+/* when deck opened, we also want hover lift and pointer; attach dynamic hover effects */
+function attachHoverEffects(){
+  cards.forEach((c, idx) => {
+    c.onmouseenter = () => {
+      if(!opened) return;
+      // compute rotate/scale from current transform if possible
+      // we stored positions earlier so simply increase translate up
+      c.style.transform = c.style.transform.replace(/translate\([^)]*\)/,'translate(0,-12px)');
+      c.style.zIndex = 2000;
+    };
+    c.onmouseleave = () => {
+      if(!opened) return;
+      // revert translate (we recompute full transform by re-applying computePositions)
+      const positions = computePositions();
+      const i = idx;
+      const p = positions[i];
+      c.style.transform = `translate(0,0) rotate(${p.rotate}deg) scale(${p.scale})`;
+      c.style.zIndex = ''; 
+    };
+  });
+}
+
+/* flip card (3D flip) and then open overlay */
 function flipCard(card){
-  card.style.transform += " rotateY(180deg)";
+  // add Y rotation by toggling transform; for consistent effect, apply an extra rotateY
+  card.style.transition = 'transform 0.55s cubic-bezier(.2,.9,.3,1)';
+  // append rotateY to current transform
+  card.style.transform += ' rotateY(180deg)';
   setTimeout(()=>{
-    openCard(parseInt(card.dataset.index));
-  }, 500);
+    openCard(parseInt(card.dataset.index,10));
+  }, 520);
 }
 
-// Overlay
+/* open overlay showing selected card */
 function openCard(i){
-  const overlay = document.getElementById("overlay");
-  overlay.classList.add("show");
-  document.getElementById("imgBig").src="img/"+i+"_"+names[i].toLowerCase().replace(/\s/g,"")+".jpg";
-  document.getElementById("title").innerText= names[i];
-  document.getElementById("desc").innerText= texts_IT[i];
+  overlay.classList.add('show');
+  // image path same convention as before; safe fallback if missing
+  const imgPath = `img/${i}_${names_IT[i].toLowerCase().replace(/\s+/g,'').replace(/’|'/g,'')}.jpg`;
+  imgBig.src = imgPath;
+  imgBig.alt = (lang==='it'? names_IT[i] : names_EN[i]);
+  titleEl.innerText = (lang==='it'? names_IT[i] : names_EN[i]);
+  descEl.innerText = (lang==='it'? texts_IT[i] : texts_EN[i]);
 }
 
-// Close overlay
+/* close overlay */
 function closeCard(){
-  document.getElementById("overlay").classList.remove("show");
+  overlay.classList.remove('show');
 }
 
-// Restart deck
+/* restart: close overlay and re-stack deck, closed state */
 function restart(){
   closeCard();
-  createCards();
+  // small timeout so overlay hides smoothly
+  setTimeout(()=>{ closeDeck(); }, 40);
+  // after reclosing, set opened=false (closeDeck sets it)
+  opened = false;
 }
 
-// Play music
-window.addEventListener("load", ()=>{
-  createCards();
-  const bg = document.getElementById("bgmusic");
-  bg.play().catch(()=>{console.log("Clicca per attivare la musica")});
+/* language toggle */
+langBtn.addEventListener('click', ()=>{
+  lang = (lang==='it') ? 'en' : 'it';
+  langBtn.innerText = (lang==='it') ? 'EN' : 'IT';
+  titleMain.innerText = (lang==='it') ? 'Scegli la tua carta' : 'Choose your card';
+  // If overlay open, update its text immediately
+  if(overlay.classList.contains('show')){
+    const idx = indices[0]; // not reliable — better to read current img title from alt
+    // update title/desc by reading current displayed index from img filename
+    // We'll parse the src to get index
+    const src = imgBig.src || '';
+    const match = src.match(/\/(\d+)_/);
+    if(match) {
+      const i = parseInt(match[1],10);
+      titleEl.innerText = (lang==='it'? names_IT[i] : names_EN[i]);
+      descEl.innerText = (lang==='it'? texts_IT[i] : texts_EN[i]);
+    }
+  }
+});
+
+/* music control: play/pause */
+musicBtn.addEventListener('click', ()=>{
+  if(bg.paused){
+    bg.play().catch(()=>{/* user gesture required in some browsers */});
+    musicBtn.innerText = 'Pause music';
+  } else {
+    bg.pause();
+    musicBtn.innerText = 'Play music';
+  }
+});
+
+/* deck click: if closed, open; else nothing (individual card clicks still work) */
+deck.addEventListener('click', (e)=>{
+  if(!opened){
+    openDeck();
+    attachHoverEffects();
+  }
+});
+
+/* utility - recompute positions on resize so layout remains centered */
+window.addEventListener('resize', ()=>{
+  if(opened){
+    // reposition all cards based on new computePositions()
+    const positions = computePositions();
+    cards.forEach((c, idx)=>{
+      const pos = positions[idx];
+      c.style.left = (pos.x - 55) + 'px';
+      c.style.top  = (pos.y - 80) + 'px';
+      c.style.transform = `translate(0,0) rotate(${pos.rotate}deg) scale(${pos.scale})`;
+    });
+  } else {
+    // re-stack to center
+    cards.forEach((c, idx)=>{
+      const rx = (Math.random()-0.5)*6;
+      const ry = (Math.random()-0.5)*6;
+      c.style.left = `calc(50% + ${rx}px)`;
+      c.style.top  = `calc(50% + ${ry}px)`;
+    });
+  }
+});
+
+/* initial boot */
+window.addEventListener('load', ()=>{
+  createStack();
+  // set initial button states
+  langBtn.innerText = 'EN';
+  musicBtn.innerText = 'Play music';
+
+  // small instruction: clicking the stack opens it
+  titleMain.innerText = (lang==='it') ? 'Clicca il mazzo per aprire' : 'Click the deck to open';
 });
 </script>
 </body>
