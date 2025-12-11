@@ -46,7 +46,6 @@ button.ctrl{
   align-items:center;
   justify-content:center;
   perspective:1400px;
-  -webkit-tap-highlight-color: transparent;
 }
 .card{
   position:absolute;
@@ -136,111 +135,129 @@ button.ctrl{
 <audio id="bgmusic" loop preload="none"><source src="music.mp3" type="audio/mpeg"></audio>
 
 <script>
-/* -------- DATA -------- */
-const namesIT = [
-"Il Matto / Masaniello","Il Mago / Virgilio","La Papessa / Sibilla Cumana",
-"L’Imperatrice / Maria Carolina","L’Imperatore / Federico II","Il Papa / San Gennaro",
-"Gli Amanti / Sebeto e Megara","Il Carro / Maradona","La Forza / Femminiello",
-"L’Eremita / Munaciello","La Ruota della Fortuna / Ruota degli Esposti",
-"La Giustizia / Maddalena Cerasuolo","L’Appeso / Maria la Rossa",
-"La Morte / Anime Pezzentelle","La Temperanza / Partenope","Il Diavolo / Mammone",
-"La Torre / Maschio Angioino","La Stella / Bella ’Mbriana","La Luna / Janare",
-"Il Sole / Pulcinella","Il Giudizio / Vesuvio","Il Mondo / Artisti Napoletani"
-];
-const namesEN = [
-"The Fool","The Magician","The High Priestess","The Empress","The Emperor",
-"The Hierophant","The Lovers","The Chariot","Strength","The Hermit",
-"Wheel of Fortune","Justice","The Hanged Man","Death","Temperance",
-"The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"
-];
-const descIT = [/* tutte le descrizioni complete come nell'ultima versione */];
-const descEN = [/* tutte le descrizioni complete come nell'ultima versione */];
+/* ---- DATI ---- */
+const namesIT=["Il Matto / Masaniello","Il Mago / Virgilio","La Papessa / Sibilla Cumana","L’Imperatrice / Maria Carolina","L’Imperatore / Federico II","Il Papa / San Gennaro","Gli Amanti / Sebeto e Megara","Il Carro / Maradona","La Forza / Femminiello","L’Eremita / Munaciello","La Ruota della Fortuna / Ruota degli Esposti","La Giustizia / Maddalena Cerasuolo","L’Appeso / Maria la Rossa","La Morte / Anime Pezzentelle","La Temperanza / Partenope","Il Diavolo / Mammone","La Torre / Maschio Angioino","La Stella / Bella ’Mbriana","La Luna / Janare","Il Sole / Pulcinella","Il Giudizio / Vesuvio","Il Mondo / Artisti Napoletani"];
+const namesEN=["The Fool","The Magician","The High Priestess","The Empress","The Emperor","The Hierophant","The Lovers","The Chariot","Strength","The Hermit","Wheel of Fortune","Justice","The Hanged Man","Death","Temperance","The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"];
+const descIT=[/* qui tutte le 22 descrizioni IT complete */];
+const descEN=[/* qui tutte le 22 descrizioni EN complete */];
 
-/* -------- ELEMENTS & STATE -------- */
-const deckEl = document.getElementById('deck');
-const overlay = document.getElementById('overlay');
-const imgBig = document.getElementById('imgBig');
-const titleEl = document.getElementById('title');
-const descEl = document.getElementById('desc');
-const titleMain = document.getElementById('titleMain');
-const musicBtn = document.getElementById('musicBtn');
-const langIt = document.getElementById('langIt');
-const langEn = document.getElementById('langEn');
-const restartBtn = document.getElementById('restart');
-const bg = document.getElementById('bgmusic');
-let cards=[], lang='it', opened=false;
+/* ---- ELEMENTI ---- */
+const deckEl=document.getElementById('deck');
+const overlay=document.getElementById('overlay');
+const imgBig=document.getElementById('imgBig');
+const titleEl=document.getElementById('title');
+const descEl=document.getElementById('desc');
+const titleMain=document.getElementById('titleMain');
+const musicBtn=document.getElementById('musicBtn');
+const langIt=document.getElementById('langIt');
+const langEn=document.getElementById('langEn');
+const restartBtn=document.getElementById('restart');
+const bg=document.getElementById('bgmusic');
+let cards=[],lang='it',opened=false;
 
-/* helper */
+/* ---- HELPERS ---- */
 function slugFromName(name){return name.split('/')[0].trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'');}
-function getCardW(){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-w'))||110; }
-function getCardH(){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-h'))||160; }
+function getCardW(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-w'))||110;}
+function getCardH(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-h'))||160;}
 
-/* ------------------- CREA MAZZO ------------------- */
+/* ---- CREA MAZZO ---- */
 function createClosedDeck(){
   deckEl.innerHTML=''; cards=[]; opened=false;
-  titleMain.innerText = (lang==='it')?'Clicca il mazzo per aprire':'Tap the deck to open';
-  const n=22; const cw=getCardW(), ch=getCardH();
-  for(let i=0;i<n;i++){
-    const c=document.createElement('div'); c.className='card stack-card stack-pulse';
-    c.style.left=`calc(50% - ${cw/2}px)`; c.style.top=`calc(50% - ${ch/2}px)`;
-    c.style.backgroundImage='url("back.jpg")'; c.style.opacity=1; c.dataset.index=i;
-    if(i===0){ c.style.cursor='pointer'; c.addEventListener('click',()=>openDeck()); }
-    deckEl.appendChild(c); cards.push(c);
-  }
+  titleMain.innerText=(lang==='it')?'Clicca il mazzo per aprire':'Tap the deck to open';
+  const c=document.createElement('div');
+  c.className='card stack-card stack-pulse';
+  c.style.left=`calc(50% - ${getCardW()/2}px)`;
+  c.style.top=`calc(50% - ${getCardH()/2}px)`;
+  c.style.backgroundImage='url("back.jpg")';
+  c.style.opacity=1;
+  c.addEventListener('click',()=>openDeck());
+  deckEl.appendChild(c);
+  cards.push(c);
 }
 
-/* ------------------- APERTURA MAZZO ------------------- */
+/* ---- APERTURA MAZZO ---- */
 function openDeck(){
   if(opened)return; opened=true;
   spawnDeck();
 }
 
-/* ------------------- SPAWN E FAN ------------------- */
+/* ---- SPAWN FAN ---- */
 function spawnDeck(){
-  deckEl.innerHTML=''; const n=22; const cw=getCardW(), ch=getCardH();
+  deckEl.innerHTML=''; cards=[];
+  const n=22; const cw=getCardW(), ch=getCardH();
   for(let i=0;i<n;i++){
     const c=document.createElement('div'); c.className='card'; c.dataset.index=i;
-    c.style.left=`calc(50% - ${cw/2}px)`; c.style.top=`calc(50% - ${ch/2}px)`; c.style.backgroundImage='url("back.jpg")'; c.style.opacity=1;
+    c.style.left=`calc(50% - ${cw/2}px)`; c.style.top=`calc(50% - ${ch/2}px)`;
+    c.style.backgroundImage='url("back.jpg")'; c.style.opacity=1;
     c.addEventListener('click',()=>onCardClick(c));
     deckEl.appendChild(c); cards.push(c);
   }
-  setTimeout(()=>fanOpen(),100);
+  setTimeout(fanOpen,100);
 }
 function fanOpen(){
-  const n=cards.length; const deckRect=deckEl.getBoundingClientRect(); const cw=getCardW(),ch=getCardH();
-  const pivotX=deckRect.width/2; const pivotY=deckRect.height/2;
-  const leftAngle=-50, rightAngle=20, totalAngle=rightAngle-leftAngle;
-  const mid=(n-1)/2; const order=Array.from({length:n},(_,i)=>i).sort((a,b)=>Math.abs(a-mid)-Math.abs(b-mid));
+  const n=cards.length, deckRect=deckEl.getBoundingClientRect(), cw=getCardW(),ch=getCardH();
+  const pivotX=deckRect.width/2, pivotY=deckRect.height/2;
+  const leftAngle=-50,rightAngle=20,totalAngle=rightAngle-leftAngle,mid=(n-1)/2;
+  const order=Array.from({length:n},(_,i)=>i).sort((a,b)=>Math.abs(a-mid)-Math.abs(b-mid));
   const positions=new Array(n);
   for(let i=0;i<n;i++){
-    const t=i/(n-1); const eased=t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-    const angleDeg=leftAngle+eased*totalAngle; const angleRad=angleDeg*Math.PI/180;
+    const t=i/(n-1);
+    const eased=t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+    const angleDeg=leftAngle+eased*totalAngle;
+    const angleRad=angleDeg*Math.PI/180;
     const radius=Math.max(deckRect.width*0.48,280);
-    const px=pivotX+radius*Math.sin(angleRad); const py=pivotY-radius*Math.cos(angleRad);
+    const px=pivotX+radius*Math.sin(angleRad), py=pivotY-radius*Math.cos(angleRad);
     const centerOffset=Math.cos((t-0.5)*Math.PI)*6;
-    positions[i]={x:px-cw/2, y:py-ch+centerOffset, angle:angleDeg, scale:1+0.18*Math.cos((t-0.5)*Math.PI)};
+    positions[i]={x:px-cw/2,y:py-ch+centerOffset,angle:angleDeg,scale:1+0.18*Math.cos((t-0.5)*Math.PI)};
   }
-  order.forEach((i,seq)=>{ const pos=positions[i]; const delay=seq*40+Math.random()*30; setTimeout(()=>{ const c=cards[i]; c.style.left=pos.x+'px'; c.style.top=pos.y+'px'; c.style.transform=`rotate(${pos.angle}deg) scale(${pos.scale})`; c.style.opacity=1; if(Math.abs(i-mid)<3)c.classList.add('glow'); c.style.zIndex=3000-Math.round(Math.abs(i-mid)); },delay); });
+  order.forEach((i,seq)=>{
+    const pos=positions[i];
+    setTimeout(()=>{
+      const c=cards[i];
+      c.style.left=pos.x+'px';
+      c.style.top=pos.y+'px';
+      c.style.transform=`rotate(${pos.angle}deg) scale(${pos.scale})`;
+      c.style.opacity=1;
+      if(Math.abs(i-mid)<3)c.classList.add('glow');
+      c.style.zIndex=3000-Math.round(Math.abs(i-mid));
+    },seq*40+Math.random()*30);
+  });
 }
 function onCardClick(card){
-  const idx=parseInt(card.dataset.index,10);
-  cards.forEach(c=>{if(c!==card){c.style.opacity=0; c.style.transform='scale(0.6)';} else{c.style.transform+=' rotateY(180deg) scale(1.02)'; setTimeout(()=>{c.style.backgroundImage=`url("img/${idx}_${slugFromName(namesIT[idx])}.jpg")`;},240);}});
+  const idx=parseInt(card.dataset.index);
+  cards.forEach(c=>{
+    if(c!==card){c.style.opacity=0;c.style.transform='scale(0.6)';}
+    else{c.style.transform+=' rotateY(180deg) scale(1.02)'; setTimeout(()=>{c.style.backgroundImage=`url("img/${idx}_${slugFromName(namesIT[idx])}.jpg")`;},240);}
+  });
   setTimeout(()=>openOverlay(idx),520);
 }
-function openOverlay(i){ overlay.classList.add('show'); titleEl.innerText=(lang==='it')?namesIT[i]:namesEN[i]; descEl.innerText=(lang==='it')?descIT[i]:descEN[i]; imgBig.src=`img/${i}_${slugFromName(namesIT[i])}.jpg`; imgBig.alt=(lang==='it')?namesIT[i]:namesEN[i]; }
-function closeCard(){ overlay.classList.remove('show'); }
-function restart(){ closeCard(); setTimeout(()=>createClosedDeck(),300); }
+function openOverlay(i){
+  overlay.classList.add('show');
+  titleEl.innerText=(lang==='it')?namesIT[i]:namesEN[i];
+  descEl.innerText=(lang==='it')?descIT[i]:descEN[i];
+  imgBig.src=`img/${i}_${slugFromName(namesIT[i])}.jpg`;
+  imgBig.alt=(lang==='it')?namesIT[i]:namesEN[i];
+}
+function closeCard(){overlay.classList.remove('show');}
+function restart(){closeCard();setTimeout(createClosedDeck,300);}
 
-/* ------- EVENTI ------- */
-musicBtn.addEventListener('click',()=>{ if(bg.paused){bg.play().catch(()=>{}); musicBtn.innerText='⏸ Pause';} else{bg.pause(); musicBtn.innerText='🎵 Play';} });
+/* ---- CONTROLLI ---- */
+musicBtn.addEventListener('click',()=>{if(bg.paused){bg.play().catch(()=>{});musicBtn.innerText='⏸ Pause';}else{bg.pause();musicBtn.innerText='🎵 Play';}});
 langIt.addEventListener('click',()=>setLang('it'));
 langEn.addEventListener('click',()=>setLang('en'));
-function setLang(l){ lang=l; titleMain.innerText=(lang==='it')?'Clicca il mazzo per aprire':'Tap the deck to open'; if(overlay.classList.contains('show')){ const src=imgBig.src||''; const m=src.match(/\/(\d+)_/); if(m){ const i=parseInt(m[1],10); titleEl.innerText=(lang==='it')?namesIT[i]:namesEN[i]; descEl.innerText=(lang==='it')?descIT[i]:descEN[i]; } } }
-restartBtn.addEventListener('click',(e)=>{ e.stopPropagation(); restart(); });
-overlay.addEventListener('click',(e)=>{ if(e.target===overlay)closeCard(); });
-window.addEventListener('resize',()=>{ if(opened && cards.length) fanOpen(); });
+function setLang(l){
+  lang=l;
+  titleMain.innerText=(lang==='it')?'Clicca il mazzo per aprire':'Tap the deck to open';
+  if(overlay.classList.contains('show')){
+    const src=imgBig.src||''; const m=src.match(/\/(\d+)_/);
+    if(m){const i=parseInt(m[1],10); titleEl.innerText=(lang==='it')?namesIT[i]:namesEN[i]; descEl.innerText=(lang==='it')?descIT[i]:descEN[i];}
+  }
+}
+restartBtn.addEventListener('click',restart);
+overlay.addEventListener('click',e=>{if(e.target===overlay)closeCard();});
+window.addEventListener('resize',()=>{if(opened && cards.length)fanOpen();});
 
-/* ------- INIT ------- */
+/* ---- INIT ---- */
 createClosedDeck();
 </script>
 </body>
