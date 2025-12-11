@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
 <meta charset="utf-8" />
@@ -24,42 +24,33 @@
     overflow-x:hidden;
   }
 
-  header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:14px 18px;
-    gap:12px;
-  }
+  header{display:flex;justify-content:space-between;align-items:center;padding:12px 18px}
   h1{margin:0;font-size:20px;letter-spacing:2px}
 
-  /* controls */
   .controls{display:flex;gap:8px;align-items:center}
   button.ctrl{
-    background:rgba(34,25,51,0.6);
+    background:rgba(34,25,51,0.55);
     color:var(--fg);
-    border:1px solid rgba(147,116,201,0.25);
+    border:1px solid rgba(147,116,201,0.22);
     padding:8px 12px;border-radius:10px;
     cursor:pointer;font-size:14px;
     backdrop-filter: blur(4px);
   }
-  button.ctrl:active{transform:translateY(1px)}
 
-  /* deck container — transparent, no rectangle */
+  /* deck area (transparent) */
   #deck{
     position:relative;
     width:100%;
-    height:62vh;
-    min-height:320px;
+    height:64vh;
+    min-height:360px;
     display:flex;
     align-items:center;
     justify-content:center;
     perspective:1400px;
-    pointer-events:auto;
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* single card */
+  /* card basics */
   .card{
     position:absolute;
     width:var(--card-w);
@@ -67,54 +58,46 @@
     border-radius:10px;
     background-size:cover;
     background-position:center;
-    transform-origin: center bottom; /* rotate around bottom to mimic hand hold */
+    transform-origin:center bottom; /* rotate around bottom edge to mimic thumb pivot */
     cursor:pointer;
     opacity:0;
-    transition: box-shadow .25s ease, transform .7s cubic-bezier(.2,.9,.3,1), left .65s ease, top .65s ease, opacity .35s;
+    transition: box-shadow .18s ease, transform .72s cubic-bezier(.2,.9,.3,1), left .72s ease, top .72s ease, opacity .28s;
     will-change: transform, left, top, opacity;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-    border: 2px solid rgba(0,0,0,0.12);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.6);
+    border:2px solid rgba(0,0,0,0.12);
     overflow:hidden;
   }
 
-  /* front/back as background images will be set inline; add gold border & glow */
   .card::after{
     content:"";
     position:absolute;inset:0;border-radius:10px;
     pointer-events:none;
-    box-shadow: inset 0 0 0 2px rgba(212,175,55,0); /* will be animated to gold on open */
-    transition: box-shadow .35s ease, filter .25s;
+    box-shadow: inset 0 0 0 0 rgba(212,175,55,0);
+    transition: box-shadow .3s ease, filter .25s;
   }
-
   .card.open-style::after{
     box-shadow: inset 0 0 0 2px var(--gold);
-    filter: drop-shadow(0 6px 18px rgba(0,0,0,0.6));
+    filter: drop-shadow(0 8px 22px rgba(0,0,0,0.6));
   }
+  .card.glow{ filter: drop-shadow(0 0 14px rgba(147,116,201,0.32)); }
 
-  /* hover glow */
   .card:hover{
-    box-shadow: 0 20px 44px rgba(0,0,0,0.7);
-    transform: translateY(-10px) rotateY(0deg) scale(1.08);
-    z-index:2000;
-  }
-  .card.glow{
-    filter: drop-shadow(0 0 12px rgba(147,116,201,0.35));
+    transform: translateY(-10px) scale(1.06);
+    z-index:3000;
+    box-shadow: 0 28px 56px rgba(0,0,0,0.7);
   }
 
-  /* breathing (closed deck) */
-  .stack-pulse{
-    animation: breathe 2.6s infinite;
-  }
+  /* stacked closed deck style breathing */
+  .stack-card{ transition: transform .9s ease, opacity .5s; }
+  .stack-pulse{ animation: breathe 2.6s infinite; transform-origin:center; }
   @keyframes breathe{
-    0%{ transform: translateX(-50%) translateY(0) scale(1) }
-    50%{ transform: translateX(-50%) translateY(-4px) scale(1.02) }
-    100%{ transform: translateX(-50%) translateY(0) scale(1) }
+    0%{ transform: translateX(-50%) translateY(-50%) rotate(0deg) scale(1) }
+    50%{ transform: translateX(-50%) translateY(-54%) rotate(0deg) scale(1.022) }
+    100%{ transform: translateX(-50%) translateY(-50%) rotate(0deg) scale(1) }
   }
 
-  /* shake animation */
-  .shake{
-    animation: shakeit .42s cubic-bezier(.4,.0,.2,1);
-  }
+  /* shake */
+  .shake{ animation: shakeit .42s cubic-bezier(.4,0,.2,1); transform-origin:center; }
   @keyframes shakeit{
     0%{ transform: translateX(-50%) rotate(0deg) }
     25%{ transform: translateX(calc(-50% + 6px)) rotate(-1.6deg) }
@@ -123,34 +106,30 @@
     100%{ transform: translateX(-50%) rotate(0deg) }
   }
 
-  /* overlay (semi transparent gradient, not solid black) */
+  /* overlay: gradient translucent, not a black rectangle */
   #overlay{
     position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-    background: linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.85));
+    background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.8));
     opacity:0;pointer-events:none;transition:opacity .28s ease;
     padding:18px;
   }
-  #overlay.show{opacity:1;pointer-events:auto}
+  #overlay.show{ opacity:1; pointer-events:auto; }
 
   #box{
-    width:100%;max-width:460px;background:linear-gradient(180deg,#0f0f10, #111111);
-    border-radius:12px;padding:18px;box-shadow:0 18px 60px rgba(0,0,0,0.7);
-    max-height:92vh;overflow:auto;
-    transform-origin:center;transition: transform .32s cubic-bezier(.2,.9,.3,1);
+    width:100%;max-width:520px;background:linear-gradient(180deg,#0f0f10,#111111);
+    border-radius:12px;padding:18px;box-shadow:0 20px 66px rgba(0,0,0,0.7);
+    max-height:92vh;overflow:auto;transform-origin:center;transition:transform .32s cubic-bezier(.2,.9,.3,1);
   }
-  #overlay.show #box{transform:scale(1)}
-
   #box img{width:100%;border-radius:8px;display:block}
   #title{margin-top:12px;font-size:20px}
   #desc{margin-top:10px;line-height:1.45;color:#e8dfc6;text-align:justify}
-
   #restart{margin-top:14px;padding:10px 14px;border-radius:10px;background:#2b1f3a;border:1px solid rgba(147,116,201,0.18);color:var(--fg);cursor:pointer}
 
   /* responsive tweaks */
   @media (max-width:640px){
-    :root{--card-w:88px;--card-h:128px}
-    header{padding:10px}
-    #box{max-width:95%}
+    :root{ --card-w:88px; --card-h:128px }
+    header{padding:8px}
+    #box{max-width:94%}
   }
 </style>
 </head>
@@ -164,10 +143,8 @@
   </div>
 </header>
 
-<!-- deck (transparent background) -->
 <div id="deck" aria-label="Mazzo di carte"></div>
 
-<!-- overlay -->
 <div id="overlay" onclick="closeCard()">
   <div id="box" onclick="event.stopPropagation()">
     <img id="imgBig" alt="">
@@ -179,13 +156,10 @@
   </div>
 </div>
 
-<!-- audio -->
-<audio id="bgmusic" loop preload="none">
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
+<audio id="bgmusic" loop preload="none"><source src="music.mp3" type="audio/mpeg"></audio>
 
 <script>
-/* ---------- DATA ---------- */
+/* ===== DATA ===== */
 const namesIT = [
 "Il Matto / Masaniello","Il Mago / Virgilio","La Papessa / Sibilla Cumana",
 "L’Imperatrice / Maria Carolina","L’Imperatore / Federico II","Il Papa / San Gennaro",
@@ -204,7 +178,6 @@ const namesEN = [
 "The Devil","The Tower","The Star","The Moon","The Sun","Judgement","The World"
 ];
 
-/* italian full descriptions (as you provided earlier; shortened for brevity placeholders replaced with full text) */
 const descIT = [
 "Il Matto / Masaniello — La carta del Matto rappresenta la spontaneità, l’ingenuità e la libertà. È una figura che agisce senza pregiudizi, spesso in modo impulsivo e senza calcolare i rischi. Il Matto è fuori dagli schemi, viaggia senza meta, fiducioso nel suo istinto, ma vulnerabile ai pericoli della strada e pronto a farsi travolgere dal suo stesso caos interiore.",
 "Il Mago / Virgilio — La carta del Mago rappresenta l’abilità, il potere creativo e la padronanza degli strumenti necessari per trasformare la realtà. Il Mago è colui che sa agire con intelligenza, sfruttando le risorse a sua disposizione per raggiungere i propri obiettivi.",
@@ -231,34 +204,33 @@ const descIT = [
 ];
 
 const descEN = [
-"The Fool / Masaniello — The Fool stands for spontaneity, naivety and freedom; he acts often impulsively and trusts his instincts while facing life’s hazards.",
-"The Magician / Virgilio — The Magician symbolizes skill, creative power and mastery of tools to transform reality, using resources wisely to reach goals.",
-"The High Priestess / Sibilla Cumana — The High Priestess represents hidden wisdom, intuition and spiritual knowledge, linked to inner life and mystery.",
-"The Empress / Maria Carolina — The Empress stands for fertility, abundance and creative power, embodying femininity and nurturing governance.",
-"The Emperor / Federico II — The Emperor symbolizes authority, responsibility and rational leadership bringing stability.",
-"The Hierophant / San Gennaro — The Hierophant stands for spiritual authority and moral guidance between divine and human.",
-"The Lovers / Sebeto e Megara — The Lovers represent love, union and decisive choices, balancing opposites and life-changing decisions.",
-"The Chariot / Maradona — The Chariot symbolizes victory, determination and control achieved through discipline and will.",
-"Strength / Femminiello — Strength represents courage, self-mastery and gentle control of instincts through patience.",
-"The Hermit / Munaciello — The Hermit stands for inner search, voluntary solitude and wisdom gained through reflection.",
-"Wheel of Fortune / Ruota degli Esposti — The Wheel symbolizes life cycles, change and the unpredictability of fate.",
-"Justice / Maddalena Cerasuolo — Justice stands for balance, truth and impartial action, responsibility and fairness.",
-"The Hanged Man / Maria la Rossa — The Hanged Man represents suspension, sacrifice and a change of perspective, inviting inner reflection.",
-"Death / Anime Pezzentelle — Death symbolizes radical transformation and the end of a cycle, opening space for renewal.",
-"Temperance / Partenope — Temperance represents harmony, moderation and the blend of opposites to create unity.",
-"The Devil / Mammone — The Devil symbolizes temptation, bondage and destructive desires, and the path to break free from them.",
-"The Tower / Maschio Angioino — The Tower stands for sudden upheaval and dismantling, followed by necessary rebuilding.",
-"The Star / Bella ’Mbriana — The Star represents hope, healing and spiritual guidance after chaos.",
-"The Moon / Janare — The Moon stands for the unconscious, intuition and hidden illusions and fears.",
-"The Sun / Pulcinella — The Sun symbolizes joy, vitality, clarity and success, bringing growth and optimism.",
-"Judgement / Vesuvio — Judgement symbolizes reckoning, rebirth and taking stock before a new beginning.",
-"The World / Artisti Napoletani — The World stands for completion, harmony and fulfillment; celebration of wholeness."
+"The Fool / Masaniello — The Fool stands for spontaneity, naivety and freedom.",
+"The Magician / Virgilio — The Magician symbolizes skill, creative power and mastery of tools.",
+"The High Priestess / Sibilla Cumana — The High Priestess represents hidden wisdom and intuition.",
+"The Empress / Maria Carolina — The Empress stands for fertility, abundance and nurturing power.",
+"The Emperor / Federico II — The Emperor symbolizes authority and stable leadership.",
+"The Hierophant / San Gennaro — The Hierophant represents spiritual authority and guidance.",
+"The Lovers / Sebeto e Megara — The Lovers represent love, union and important choices.",
+"The Chariot / Maradona — The Chariot symbolizes victory, determination and control.",
+"Strength / Femminiello — Strength represents courage and inner mastery.",
+"The Hermit / Munaciello — The Hermit symbolizes introspection and wisdom.",
+"Wheel of Fortune / Ruota degli Esposti — The Wheel symbolizes life's cycles and change.",
+"Justice / Maddalena Cerasuolo — Justice represents fairness and truth.",
+"The Hanged Man / Maria la Rossa — The Hanged Man stands for suspension and new perspective.",
+"Death / Anime Pezzentelle — Death symbolizes transformation and the end of a cycle.",
+"Temperance / Partenope — Temperance represents balance and harmony.",
+"The Devil / Mammone — The Devil symbolizes temptation and inner shadows.",
+"The Tower / Maschio Angioino — The Tower stands for sudden change and rebuilding.",
+"The Star / Bella ’Mbriana — The Star represents hope and inspiration.",
+"The Moon / Janare — The Moon stands for intuition and hidden mysteries.",
+"The Sun / Pulcinella — The Sun symbolizes joy, vitality and success.",
+"Judgement / Vesuvio — Judgement symbolizes rebirth and reckoning.",
+"The World / Artisti Napoletani — The World stands for completion and fulfillment."
 ];
 
-/* ---------- state + elements ---------- */
+/* ===== Elements & state ===== */
 const deck = document.getElementById('deck');
 const overlay = document.getElementById('overlay');
-const box = document.getElementById('box');
 const imgBig = document.getElementById('imgBig');
 const titleEl = document.getElementById('title');
 const descEl = document.getElementById('desc');
@@ -273,165 +245,178 @@ let cards = [];
 let lang = 'it';
 let opened = false;
 
-/* ---------- helper: slug for filenames (expects e.g. 0_ilmatto.jpg) ---------- */
-function slugFromName(itName){
-  // take part before slash or before first space after article; prefer first word significant
-  let base = itName.split('/')[0].trim().toLowerCase();
-  // remove non letters numbers
+/* slug helper to build filenames like "0_ilmatto.jpg" */
+function slugFromName(name){
+  let base = name.split('/')[0].trim().toLowerCase();
   base = base.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   base = base.replace(/[^a-z0-9]+/g,'');
   return base;
 }
 
-/* ---------- create closed deck (single stacked card element, with breathing & hint) ---------- */
+/* CREATE CLOSED STACK (visual composed of few stacked cards for depth) */
 function createClosedDeck(){
-  deck.innerHTML='';
+  deck.innerHTML = '';
   cards = [];
   opened = false;
   titleMain.innerText = (lang==='it') ? 'Clicca il mazzo per aprire' : 'Tap the deck to open';
 
-  // create stacked layered cards to give depth
+  // create layered mini-stack (6 layers)
   for(let i=0;i<6;i++){
-    const stack = document.createElement('div');
-    stack.className='card stack-pulse';
-    stack.style.left='50%';
-    stack.style.top='50%';
-    stack.style.transform='translateX(-50%) translateY(-50%) rotate(' + ((i-2)*1.2) + 'deg)';
-    stack.style.backgroundImage = `url("back.jpg")`;
-    stack.style.opacity = 1 - i*0.06;
-    stack.style.zIndex = 200 + i;
-    // only topmost responds to click
+    const el = document.createElement('div');
+    el.className = 'card stack-card stack-pulse';
+    el.style.left = '50%';
+    el.style.top = '50%';
+    el.style.transform = `translateX(-50%) translateY(-50%) rotate(${(i-3)*1.2}deg)`;
+    el.style.backgroundImage = `url("back.jpg")`;
+    el.style.opacity = 1 - i*0.06;
+    el.style.zIndex = 200 + i;
+    // topmost responds to click
     if(i===5){
-      stack.style.cursor='pointer';
-      stack.addEventListener('click',(e)=>{ e.stopPropagation(); openDeck(); });
+      el.style.cursor='pointer';
+      el.addEventListener('click', e => { e.stopPropagation(); openDeck(); });
     } else {
-      stack.style.pointerEvents='none';
+      el.style.pointerEvents='none';
     }
-    deck.appendChild(stack);
-    cards.push(stack);
+    deck.appendChild(el);
+    cards.push(el);
   }
 }
 
-/* ---------- openDeck: shake then create full set and animate opening (natural hand style) ---------- */
+/* OPEN DECK: shake then spawn and fan */
 function openDeck(){
   if(opened) return;
   opened = true;
-  // remove existing stacks
-  deck.innerHTML='';
-  cards=[];
 
-  // initial shake indicator anchored at center — create a temporary element to show shake on deck
-  const anchor = document.createElement('div');
-  anchor.style.position='absolute';
-  anchor.style.left='50%'; anchor.style.top='50%';
-  anchor.style.width='0'; anchor.style.height='0';
-  deck.appendChild(anchor);
-  anchor.classList.add('shake');
+  // shake top area to mimic hand adjustment
+  const shaker = document.createElement('div');
+  shaker.style.position='absolute';
+  shaker.style.left='50%'; shaker.style.top='50%';
+  shaker.style.width='0'; shaker.style.height='0';
+  shaker.className='shake';
+  deck.appendChild(shaker);
 
-  // after shake finishes, spawn real cards and animate
   setTimeout(()=> {
-    deck.removeChild(anchor);
-    spawnCardsAndAnimate();
+    deck.removeChild(shaker);
+    spawnFullDeck();
   },420);
 }
 
-/* ---------- spawn cards, place stacked center, then animate to fan ---------- */
-function spawnCardsAndAnimate(){
+/* spawn 22 cards stacked center then animate fan */
+function spawnFullDeck(){
+  deck.innerHTML='';
+  cards = [];
   const n = 22;
-  // create card elements (all identical back initially) positioned at center stacked
   for(let i=0;i<n;i++){
     const c = document.createElement('div');
-    c.className = 'card';
+    c.className='card';
     c.dataset.index = i;
-    c.style.left = '50%';
-    c.style.top = '50%';
-    c.style.transform = 'translateX(-50%) translateY(-50%) rotate(' + ((Math.random()-0.5)*6) + 'deg) scale(1)';
+    c.style.left='50%'; c.style.top='50%';
+    c.style.transform = `translateX(-50%) translateY(-50%) rotate(${(Math.random()-0.5)*6}deg)`;
     c.style.backgroundImage = `url("back.jpg")`;
     c.style.opacity = 0;
     c.style.zIndex = 1000 + i;
-    // click to reveal (flip + overlay)
-    c.addEventListener('click', (e)=>{ e.stopPropagation(); onCardClick(c); });
+    c.addEventListener('click', e => { e.stopPropagation(); onCardClick(c); });
     deck.appendChild(c);
     cards.push(c);
   }
-
-  // small delay so elements render, then animate spread
-  setTimeout(()=> fanOpenFromHand(), 80);
+  // slight delay then fan
+  setTimeout(()=> fanOpenRealistic(), 80);
 }
 
-/* ---------- compute "hand" fan positions and animate with stagger and easing ---------- */
-function fanOpenFromHand(){
+/* FAN algorithm that mimics hand-held fan like the attached photo */
+function fanOpenRealistic(){
   const n = cards.length;
   const deckRect = deck.getBoundingClientRect();
-  const cx = deckRect.width * 0.52; // slight offset to right to mimic holding in right hand
-  const baseY = deckRect.height * 0.58; // base line (where the thumb holds)
-  const spreadTotalDeg = 42;  // total visible spread in degrees
+
+  // Pivot: like thumb grip, slightly left of center and low (so cards arc downward)
+  const pivotX = deckRect.width * 0.40;
+  const pivotY = deckRect.height * 0.85;
+
+  // Visible angular range tailored to photo: left-heavy natural tilt (for right-hand hold)
+  const leftAngleDeg = -48;   // leftmost card angle
+  const rightAngleDeg = 18;   // rightmost card angle
+  const totalAngle = rightAngleDeg - leftAngleDeg; // degrees
   const mid = (n - 1) / 2;
-  const stepX = Math.max(14, deckRect.width * 0.02); // horizontal spacing between cards
-  const lift = Math.max(6, deckRect.height*0.02);
-  const baseRotationOffset = -10; // slight left tilt for natural hand hold
 
-  cards.forEach((c, idx)=>{
-    const d = idx - mid; // negative left, positive right
-    const angle = baseRotationOffset + (d * (spreadTotalDeg / mid));
-    // X: center plus linear offset * d, but add a small curve using abs(d) to simulate splay
-    const x = cx + d * stepX + (d<0 ? -Math.abs(d)*1.0 : Math.abs(d)*0.6);
-    const y = baseY - Math.abs(d) * lift - (Math.cos((d/mid)*Math.PI/2)*6); // center slightly lower
-    const scale = 1 + 0.18 * Math.cos((d/mid)*Math.PI/2); // central slightly bigger
+  // radius controls how "tight" the fan hugs the hand
+  const radius = Math.max(deckRect.width * 0.42, 260);
 
-    // animate with stagger — center cards move first for natural feel
-    const centerDist = Math.abs(d);
-    const delay = centerDist * 40 + (Math.random()*40); // small noise
+  // spacing coefficients to mimic center-tight, edges-looser
+  for(let i=0;i<n;i++){
+    const t = i / (n - 1); // 0..1 across deck left->right
+    // ease t toward center for natural density (use easeInOut function)
+    const eased = easeInOutCubic(t);
+    const angleDeg = leftAngleDeg + eased * totalAngle;
+    const angle = angleDeg * Math.PI / 180;
 
-    setTimeout(()=>{
-      // update visual: set card front image (we keep back until flip)
-      const slug = slugFromName(namesIT[idx]);
-      const frontPath = `img/${idx}_${slug}.jpg`;
-      // set front as background-image via layered background, but keep back until flip:
-      // For nicer effect, set background to front but rotateY not applied yet: we will show back image visually by overlay? Simpler: set both images as CSS background with gradient? To keep it simple, set background to front but keep a back overlay by drawing an inner element? For performance we choose to set front image, and keep user perceives back until they flip. To ensure they see back, we set background-image to back.jpg first, then later when flipped we change background to front.
-      c.style.backgroundImage = `url("back.jpg")`; // ensure back visible
+    // compute point on circle around pivot
+    // we rotate a point located at (0, -radius) by angle and then offset by pivot
+    const pointX = pivotX + radius * Math.sin(angle);
+    const pointY = pivotY - radius * Math.cos(angle);
+
+    // adjust small vertical offset so bases align smoothly (lower in center)
+    // use a slight curve: center cards sit slightly lower
+    const centerOffset = Math.cos((t - 0.5) * Math.PI) * 6; // -6..6
+    const finalX = pointX - (getCardWidth()/2);
+    const finalY = pointY - (getCardHeight()*0.92) + centerOffset;
+
+    // progressive scale: center cards a bit bigger
+    const scale = 1 + 0.18 * Math.cos((t - 0.5) * Math.PI);
+
+    // stagger timing: center cards move first for natural motion
+    const distFromCenter = Math.abs(i - mid);
+    const delay = distFromCenter * 40 + (Math.random()*30);
+
+    // set animation with timeout
+    setTimeout(()=> {
+      const c = cards[i];
+      c.style.left = finalX + 'px';
+      c.style.top  = finalY + 'px';
       c.style.opacity = 1;
-      c.style.left = (x - (parseFloat(getComputedStyle(c).width) || 110)/2) + 'px';
-      c.style.top  = (y - (parseFloat(getComputedStyle(c).height) || 160)/2) + 'px';
-      c.style.transform = `rotate(${angle}deg) scale(${scale})`;
+      c.style.transform = `rotate(${angleDeg}deg) scale(${scale})`;
       c.classList.add('open-style');
-      // make glow subtle on center cards
-      if(Math.abs(d) < 3) c.classList.add('glow');
+      // center cards glow a bit
+      if(distFromCenter < 3) c.classList.add('glow');
+      c.style.zIndex = 2000 - Math.round(distFromCenter); // central on top
     }, delay);
-  });
+  }
 }
 
-/* ---------- clicking a card: play flip animation then open overlay ---------- */
+/* easing for smoother density (ease in-out cubic) */
+function easeInOutCubic(x){ return x<0.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2; }
+
+function getCardWidth(){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-w')) || 110; }
+function getCardHeight(){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-h')) || 160; }
+
+/* on card click: fade others and flip selected then overlay */
 function onCardClick(card){
   if(!opened) return;
-  // find index
   const idx = parseInt(card.dataset.index,10);
 
-  // Animate others fading
+  // animate others out
   cards.forEach(c=>{
-    if(c!==card){
-      c.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+    if(c !== card){
+      c.style.transition = 'transform .35s ease, opacity .35s';
       c.style.opacity = 0;
+      // shrink a bit
       c.style.transform += ' scale(0.6)';
     } else {
-      // flip this card visually: we swap background to front image and do a quick rotateY effect by toggling 3D transform
-      const slug = slugFromName(namesIT[idx]);
-      const frontPath = `img/${idx}_${slug}.jpg`;
-      // add a temporary CSS flip by scaling X then switching image (simulate flip)
-      card.style.transition = 'transform 0.45s cubic-bezier(.2,.9,.3,1), opacity 0.3s';
-      card.style.transform += ' rotateY(180deg) scale(1.05)';
-      // after half flip, swap image
+      // flip-like effect: quick rotateY and swap image
+      c.style.transition = 'transform .48s cubic-bezier(.2,.9,.3,1)';
+      // rotate a bit outward then swap background
+      c.style.transform += ' rotateY(180deg) scale(1.02)';
       setTimeout(()=>{
-        card.style.backgroundImage = `url("${frontPath}")`;
+        const slug = slugFromName(namesIT[idx]);
+        c.style.backgroundImage = `url("img/${idx}_${slug}.jpg")`;
       },240);
     }
   });
 
-  // open overlay slightly after flip
-  setTimeout(()=> openOverlay(idx), 460);
+  // after flip, show overlay
+  setTimeout(()=> openOverlay(idx), 520);
 }
 
-/* ---------- overlay open (responsive, shows full text) ---------- */
+/* overlay open */
 function openOverlay(i){
   overlay.classList.add('show');
   titleEl.innerText = (lang==='it') ? namesIT[i] : namesEN[i];
@@ -441,22 +426,21 @@ function openOverlay(i){
   imgBig.alt = (lang==='it') ? namesIT[i] : namesEN[i];
 }
 
-/* ---------- overlay close ---------- */
+/* overlay close */
 function closeCard(){
   overlay.classList.remove('show');
 }
 
-/* ---------- restart: close overlay, re-create closed deck ---------- */
+/* restart: close overlay and recreate closed deck */
 function restart(){
   closeCard();
-  // re-init after overlay hidden (allow smoothness)
-  setTimeout(()=> createClosedDeck(), 260);
+  setTimeout(()=> createClosedDeck(), 300);
 }
 
-/* ---------- music control ---------- */
+/* music control */
 musicBtn.addEventListener('click', ()=>{
   if(bg.paused){
-    bg.play().catch(()=>{/* autoplay blocked */});
+    bg.play().catch(()=>{/* blocked by browser */});
     musicBtn.innerText = '⏸ Pause';
   } else {
     bg.pause();
@@ -464,65 +448,43 @@ musicBtn.addEventListener('click', ()=>{
   }
 });
 
-/* ---------- language toggles ---------- */
-langIt.addEventListener('click', ()=>{ setLang('it'); });
-langEn.addEventListener('click', ()=>{ setLang('en'); });
-
+/* language toggles */
+langIt.addEventListener('click', ()=> setLang('it'));
+langEn.addEventListener('click', ()=> setLang('en'));
 function setLang(l){
   lang = l;
   titleMain.innerText = (lang==='it') ? 'Clicca il mazzo per aprire' : 'Tap the deck to open';
-  // if overlay visible, update text
+  // if overlay visible, update content
   if(overlay.classList.contains('show')){
-    // try preserve current card index from img src
     const src = imgBig.src || '';
     const m = src.match(/\/(\d+)_/);
-    if(m){
-      const i = parseInt(m[1],10);
-      titleEl.innerText = (lang==='it') ? namesIT[i] : namesEN[i];
-      descEl.innerText  = (lang==='it') ? descIT[i] : descEN[i];
-    }
+    if(m){ const i = parseInt(m[1],10); titleEl.innerText = (lang==='it') ? namesIT[i] : namesEN[i]; descEl.innerText = (lang==='it') ? descIT[i] : descEN[i]; }
   }
 }
 
-/* ---------- utilities ---------- */
+/* helper slug reused */
 function slugFromName(name){
-  // reuse function defined earlier in case of scoping
   let base = name.split('/')[0].trim().toLowerCase();
   base = base.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   base = base.replace(/[^a-z0-9]+/g,'');
   return base;
 }
 
-/* ---------- initial run ---------- */
+/* initialize */
 createClosedDeck();
 
-/* ---------- keyboard / accessibility: restart button & overlay buttons ---------- */
+/* restart button */
 restartBtn.addEventListener('click', (e)=>{ e.stopPropagation(); restart(); });
 overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeCard(); });
 
-/* ---------- adjust layout on resize: if opened, recompute positions slightly ---------- */
+/* responsive reposition when window resized */
 window.addEventListener('resize', ()=>{
-  if(opened && cards.length>0){
-    // recompute new positions and apply without re-creating
-    // approximate reposition similar to fanOpenFromHand but non-blocking
-    const deckRect = deck.getBoundingClientRect();
-    const cx = deckRect.width * 0.52;
-    const baseY = deckRect.height * 0.58;
-    const n = cards.length;
-    const mid = (n-1)/2;
-    const spreadTotalDeg = 42;
-    const stepX = Math.max(14, deckRect.width * 0.02);
-    const lift = Math.max(6, deckRect.height*0.02);
-    cards.forEach((c, idx)=>{
-      const d = idx - mid;
-      const angle = -10 + (d * (spreadTotalDeg / mid));
-      const x = cx + d * stepX + (d<0 ? -Math.abs(d)*1.0 : Math.abs(d)*0.6);
-      const y = baseY - Math.abs(d) * lift - (Math.cos((d/mid)*Math.PI/2)*6);
-      const scale = 1 + 0.18 * Math.cos((d/mid)*Math.PI/2);
-      c.style.left = (x - parseFloat(getComputedStyle(c).width)/2) + 'px';
-      c.style.top  = (y - parseFloat(getComputedStyle(c).height)/2) + 'px';
-      c.style.transform = `rotate(${angle}deg) scale(${scale})`;
-    });
+  if(opened && cards.length){
+    // recompute positions smoothly (no re-creation)
+    fanOpenRealistic();
+  } else {
+    // keep closed deck aesthetics
+    // do nothing special; closed stack remains centered
   }
 });
 </script>
