@@ -278,7 +278,46 @@ setTimeout(fanOpen,100);
 // FAN
 function fanOpen(){
 const n=cards.length,deckRect=deckEl.getBoundingClientRect(),cw=getCardW(),ch=getCardH();
-const pivotX=deckRect.width/2,pivotY=deckRect.height/2+30;
+function fanOpen(){
+  const n = cards.length;
+  const cw = getCardW(), ch = getCardH();
+  const deckRect = deckEl.getBoundingClientRect();
+
+  // 🔥 CENTRO REALE DELLA PAGINA
+  const pivotX = window.innerWidth / 2;
+  const pivotY = deckRect.top + deckRect.height / 2 + 30;
+
+  const leftAngle = -50;
+  const rightAngle = 20;
+  const totalAngle = rightAngle - leftAngle;
+  const mid = (n - 1) / 2;
+
+  const order = Array.from({length:n},(_,i)=>i)
+    .sort((a,b)=>Math.abs(a-mid)-Math.abs(b-mid));
+
+  const radius = Math.min(window.innerWidth * 0.42, 420);
+
+  order.forEach((i, seq)=>{
+    const t = i / (n - 1);
+    const eased = t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+    const angleDeg = leftAngle + eased * totalAngle;
+    const angleRad = angleDeg * Math.PI / 180;
+
+    const x = pivotX + radius * Math.sin(angleRad) - cw/2;
+    const y = pivotY - radius * Math.cos(angleRad) - ch;
+
+    setTimeout(()=>{
+      const c = cards[i];
+      c.style.left = x + 'px';
+      c.style.top = y + 'px';
+      c.style.transform = `rotate(${angleDeg}deg) scale(${1 + 0.15*Math.cos((t-0.5)*Math.PI)})`;
+      c.style.opacity = 1;
+      if (Math.abs(i-mid) < 3) c.classList.add('glow');
+      c.style.zIndex = 3000 - Math.round(Math.abs(i-mid));
+    }, seq * 40);
+  });
+}
+
 const leftAngle=-50,rightAngle=20,totalAngle=rightAngle-leftAngle,mid=(n-1)/2;
 const order=Array.from({length:n},(_,i)=>i).sort((a,b)=>Math.abs(a-mid)-Math.abs(b-mid));
 const positions=new Array(n);
